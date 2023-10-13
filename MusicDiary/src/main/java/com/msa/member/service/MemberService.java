@@ -60,7 +60,7 @@ public class MemberService {
 
         //step 4
         // refresh token 없으면 생성 or update. 일정 시간 지나면 로그아웃 되므로,
-        // 다시 남은 시간 최대로 초기화!
+        // 다시 남은 시간 최대로 초기화
         refreshTokenRepository.findByMember_Email(member.get().getEmail())
                 .ifPresentOrElse(refreshToken -> {
                     refreshToken.setRefreshToken(tokenInfo.refreshToken());
