@@ -1,1 +1,1 @@
-**repository 구현**
+**YC TECH ACADEMY 4조**
