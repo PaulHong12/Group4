@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -29,6 +31,9 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    //import JwtAuthFilter to extract token from HTTPServletRequest.
+    //add an invalidating method in JwtTokenProvider.
+
     public Member addUser(String userName, String email, String password) {
         Member member = new Member(userName, email, passwordEncoder.encode(password),
                 Set.of("USER"));
@@ -37,7 +42,6 @@ public class MemberService {
 
     @Transactional
     public TokenInfo login(String email, String password) {
-    //천천히 읽어보고 이해, 모르겠으면 챗지피티에게  물어보기.
         // step 1
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email, password);
@@ -66,5 +70,11 @@ public class MemberService {
                 });
 
         return tokenInfo;
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        // handle logout
+        // redirect the user to the front page
+
     }
 }

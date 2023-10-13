@@ -26,7 +26,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final RefreshTokenRepository refreshTokenRepository;
 
     //Filter이므로 HTTPServeletRequest를 받아서 필터링한다.
-    @Override
+
+    @Override    // overrided doFilter(), so It's called for each HTTP request w/o specifying to do so.
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //HttpServletRequest request가 쿠키를 가지고 있음!!
         //Cookie 오브젝트가 토큰을 가지고 있음!! TokenProvider클래스의 generateCookies() 참조!!
