@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -28,6 +30,9 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    //import JwtAuthFilter to extract token from HTTPServletRequest.
+    //add an invalidating method in JwtTokenProvider.
 
     public Member addUser(String userName, String email, String password) {
         Member member = new Member(userName, email, passwordEncoder.encode(password),
@@ -65,5 +70,11 @@ public class MemberService {
                 });
 
         return tokenInfo;
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        // handle logout
+        // redirect the user to the front page
+
     }
 }

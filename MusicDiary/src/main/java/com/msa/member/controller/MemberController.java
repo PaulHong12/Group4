@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @RequiredArgsConstructor
@@ -49,4 +52,14 @@ public class MemberController {
                 .path("/")
                 .build();
     }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<ResultDto<String>> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        memberService.logout(request, response);
+
+        return ResponseEntity.ok()
+                .body(new ResultDto<>(200, "Logged out successfully", ""));
+    }
+
 }

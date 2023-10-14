@@ -16,4 +16,8 @@ public interface PostService {
 	List<Post> getPostList();
 
 	void deletePost(long id);
+
+    Post updatePost(String title, String content);
+
+	Post addComment(int i, String content);
 }
