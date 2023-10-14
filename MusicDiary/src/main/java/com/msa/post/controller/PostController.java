@@ -3,6 +3,7 @@ package com.msa.post.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.msa.post.dto.commentDto;
 import com.msa.post.domain.Post;
 import com.msa.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,22 @@ public class PostController {
             @Parameter(name = "dto", description = "post dto")
             @RequestBody PostDto dto) {
         return new ResultDto<>(200, "", postService.addPost(dto.title(), dto.content()).convert2DTO());
+    }
+
+    @PutMapping("/{postId}")
+    @Operation(summary = "update post", description = "Post 를 수정하는 API")
+    public ResultDto<PostDto> updatePost(
+            @Parameter(name = "dto", description = "post dto")
+            @RequestBody PostDto dto) {
+        return new ResultDto<>(200, "", postService.updatePost(dto.title(), dto.content()).convert2DTO());
+    }
+
+    @PostMapping("/{postId}")
+    @Operation(summary = "add comment", description = "댓글을 추가하는 API")
+    public ResultDto<PostDto> addComment(
+            @Parameter(name = "dto", description = "comment dto")
+            @RequestBody commentDto dto) {
+        return new ResultDto<>(200, "", postService.addComment(dto.postId(), dto.content()).convert2DTO());
     }
 
     @GetMapping("")
