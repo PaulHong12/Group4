@@ -43,6 +43,10 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public void addComment(int id, String content) {
+
+	}
+	@Override
 	public void deletePost(long id) {
 		postRepository.deleteById(id);
 	}

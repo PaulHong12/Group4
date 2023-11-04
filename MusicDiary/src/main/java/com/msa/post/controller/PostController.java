@@ -36,7 +36,8 @@ public class PostController {
     public ResultDto<PostDto> updatePost(
             @Parameter(name = "dto", description = "post dto")
             @RequestBody PostDto dto) {
-        return new ResultDto<>(200, "", postService.updatePost(dto.title(), dto.content()).convert2DTO());
+      //  return new ResultDto<>(200, "", postService.updatePost(dto.title(), dto.content()).convert2DTO());
+    return null;
     }
 
     @PostMapping("/{postId}")
@@ -44,7 +45,8 @@ public class PostController {
     public ResultDto<PostDto> addComment(
             @Parameter(name = "dto", description = "comment dto")
             @RequestBody commentDto dto) {
-        return new ResultDto<>(200, "", postService.addComment(dto.postId(), dto.content()).convert2DTO());
+        return null;
+        //return new ResultDto<>(200, "", postService.addComment(dto.postId(), dto.content()).convert2DTO());
     }
 
     @GetMapping("")

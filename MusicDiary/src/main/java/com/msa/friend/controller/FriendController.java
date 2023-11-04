@@ -1,4 +1,4 @@
-package com.msa.friend.controller;
+/*package com.msa.friend.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @RequestMapping("/member")
 @RestController
+
 public class FriendController {
     private FriendService friendService;
 
@@ -63,3 +64,4 @@ public class FriendController {
         return new ResultDto<>(200, "ok", null);
     }
 }
+*/

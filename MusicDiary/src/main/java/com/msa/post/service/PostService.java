@@ -17,7 +17,7 @@ public interface PostService {
 
 	void deletePost(long id);
 
-    Post updatePost(String title, String content);
+  //  Post updatePost(String title, String content);
 
-	Post addComment(int i, String content);
+	void addComment(int i, String content);
 }
