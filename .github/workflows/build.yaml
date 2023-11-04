@@ -35,4 +35,4 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        ./gradlew jibDockerBuild -Djib.to.image=${{ secrets.ECR_URL }} -Pversion=${{ github.event.inputs.server_version }}
+        ./gradlew jib -Djib.to.image=${{ secrets.ECR_URL }} -Pversion=${{ github.event.inputs.server_version }}
