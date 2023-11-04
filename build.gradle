@@ -72,7 +72,7 @@ jib {
         image = 'openjdk:17-alpine'
     }
     to {
-        image = '845955729714.dkr.ecr.ap-northeast-2.amazonaws.com'
+        image = '845955729714.dkr.ecr.ap-northeast-2.amazonaws.com/musicdiary'
         credHelper = 'ecr-login'
         tags = ['latest']
     }
