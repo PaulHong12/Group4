@@ -15,7 +15,7 @@ plugins {
 }
 
 group = 'com.codepresso'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1-SNAPSHOT-1'
 
 java {
     sourceCompatibility = '17'
