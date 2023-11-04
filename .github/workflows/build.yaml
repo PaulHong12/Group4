@@ -31,7 +31,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: cd MusicDiary && chmod +x gradlew
 
       - name: Build and Push Docker Image
         run: |
