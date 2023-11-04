@@ -75,7 +75,7 @@ jib {
     to {
         image = '845955729714.dkr.ecr.ap-northeast-2.amazonaws.com/musicdiary'
         credHelper = 'ecr-login'
-        tags = ['latest']
+        tags = [project.version]
     }
     container {
         jvmFlags = ['-Xms512m']
