@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.msa.service.PostServiceTests" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-10-07T05:12:19" hostname="PAUL" time="0.16">
-  <properties/>
-  <testcase name="test_get_post_by_id()" classname="com.msa.service.PostServiceTests" time="0.156"/>
-  <testcase name="add 시 repository 가 호출되는 지 확인" classname="com.msa.service.PostServiceTests" time="0.001"/>
-  <testcase name="test_delete_post_by_id()" classname="com.msa.service.PostServiceTests" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
