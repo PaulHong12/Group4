@@ -34,4 +34,5 @@ jobs:
         run: cd MusicDiary && chmod +x gradlew
 
       - name: Build and Push Docker Image
-        run: cd MusicDiary && ./gradlew jib -Djib.to.image=${{ secrets.ECR_URL }} -Pversion=${{ github.event.inputs.server_version }}
+        run: |
+          cd MusicDiary && ./gradlew jib -Djib.to.image=${{ secrets.ECR_URL }} -Pversion=${{ github.event.inputs.server_version }}
