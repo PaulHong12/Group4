@@ -1,3 +1,5 @@
+
+/*
 package com.msa.config;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -10,7 +12,7 @@ import javax.sql.DataSource;
 @Configuration
 @Profile("dev")
 public class DevDataSourceConfig {
-    @Bean
+    @Bean  // 에러남 고치기.
     public DataSource dataSource() {
         return DataSourceBuilder
                 .create()
@@ -21,3 +23,4 @@ public class DevDataSourceConfig {
                 .build();
     }
 }
+*/

@@ -1,4 +1,6 @@
+/*
 package com.msa.config;
+
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -22,3 +24,4 @@ public class LiveDataSourceConfig {
                 .build();
     }
 }
+*/
