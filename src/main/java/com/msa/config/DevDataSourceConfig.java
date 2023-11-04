@@ -14,7 +14,7 @@ public class DevDataSourceConfig {
     public DataSource dataSource() {
         return DataSourceBuilder
                 .create()
-                .url("jdbc:h2:mem:testdb")
+                .url("jdbc:postgresql://845955729714.dkr.ecr.ap-northeast-2.amazonaws.com:5432/yctechaws?useSSL=false&allowPublicKeyRetrieval=true")
                 .driverClassName("org.h2.Driver")
                 .username("sa")
                 .password("password")
