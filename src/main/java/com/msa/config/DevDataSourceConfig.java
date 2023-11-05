@@ -1,5 +1,5 @@
 
-/*
+
 package com.msa.config;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -16,11 +16,10 @@ public class DevDataSourceConfig {
     public DataSource dataSource() {
         return DataSourceBuilder
                 .create()
-                .url("jdbc:postgresql://845955729714.dkr.ecr.ap-northeast-2.amazonaws.com:5432/yctechaws?useSSL=false&allowPublicKeyRetrieval=true")
-                .driverClassName("org.h2.Driver")
-                .username("sa")
-                .password("password")
+                .url("jdbc:postgresql://postgres.cmdzixdnyglk.ap-northeast-2.rds.amazonaws.com:5432/postgres?useSSL=false&allowPublicKeyRetrieval=true")
+                .driverClassName("org.postgresql.Driver")
+                .username("postgres")
+                .password("1234qwer")
                 .build();
     }
 }
-*/
