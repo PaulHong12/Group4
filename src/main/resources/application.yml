@@ -1,6 +1,5 @@
 spring:
   profiles:
-    active: dev
     include: oauth
   freemarker:
     template-loader-path: classpath:/templates
