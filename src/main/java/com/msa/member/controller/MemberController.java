@@ -2,11 +2,10 @@ package com.msa.member.controller;
 
 import com.msa.auth.TokenInfo;
 import com.msa.member.domain.Member;
-import com.msa.member.dto.LoginDto;
-import com.msa.member.dto.SignupDto;
-import com.msa.member.dto.UserDto;
+import com.msa.member.repository.dto.LoginDto;
+import com.msa.member.repository.dto.SignupDto;
+import com.msa.member.repository.dto.UserDto;
 import com.msa.member.service.MemberService;
-import com.msa.post.dto.PostDto;
 import com.msa.post.dto.ResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

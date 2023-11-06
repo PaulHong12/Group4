@@ -1,8 +1,7 @@
 package com.msa.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.msa.member.dto.UserDto;
-import com.msa.member.dto.UserDto;
+import com.msa.member.repository.dto.UserDto;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
