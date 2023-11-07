@@ -72,7 +72,10 @@ public class Member implements UserDetails {
         return new UserDto(this.username, this.email);
     }
 
+    // Hibernate에 의해 필요합니다.
+    public Member() {
 
+    }
 
     public Member(String username, String email, String password, Set<String> roles) {
         this.username = username;
