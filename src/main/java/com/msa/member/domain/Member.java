@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,10 +23,13 @@ import java.util.stream.Collectors;
 @EntityListeners(AuditingEntityListener.class)
 public class Member implements UserDetails {
 
+    //@Id
+    //@GeneratedValue(generator = "uuid2")
+    //@GenericGenerator(name = "uuid2", strategy = "uuid2")
+
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue
+    @Type(type="org.hibernate.type.UUIDCharType") // This line is optional, Hibernate usually detects the type automatically.
     private UUID id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -45,22 +49,36 @@ public class Member implements UserDetails {
     private LocalDateTime updatedAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
+    @Column(name = "role")
     @Builder.Default
     private Set<String> roles = new HashSet<>();
+
+    @Getter
+    @ManyToMany
+    @JoinTable(
+            name = "member_friends",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<Member> friends = new HashSet<>();
+
+    // 양방향 관계., 누구의 친구인지 알수있음.
+    @Getter
+    @ManyToMany(mappedBy = "friends")
+    private Set<Member> friendOf = new HashSet<>();
 
     public UserDto toDTO() {
         return new UserDto(this.username, this.email);
     }
+
+
 
     public Member(String username, String email, String password, Set<String> roles) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.roles = roles;
-    }
-
-    public Member() {
-
     }
 
     @Override
@@ -100,4 +118,21 @@ public class Member implements UserDetails {
         return true;
     }
 
+    public void setFriends(Set<Member> friends) {
+        this.friends = friends;
+    }
+
+    public void addFriend(Member friend) {
+        this.friends.add(friend);
+        friend.getFriendOf().add(this); // Add this member to the friend's list of 'friendOf'
+    }
+
+    public void removeFriend(Member friend) {
+        this.friends.remove(friend);
+        friend.getFriendOf().remove(this); // Remove this member from the friend's list of 'friendOf'
+    }
+
+    public void setFriendOf(Set<Member> friendOf) {
+        this.friendOf = friendOf;
+    }
 }
