@@ -1,5 +1,6 @@
 package com.msa.post.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,5 +20,11 @@ public interface PostService {
 
   //  Post updatePost(String title, String content);
 
-	void addComment(int i, String content);
+	Post addComment(long i, String content);
+
+    List<Post> getPostsByDate(LocalDate parsedDate);
+
+	List<Post> getPostsByDateRange(LocalDate start, LocalDate end);
+
+	Post updatePost(long postId, String title, String content);
 }

@@ -1,5 +1,6 @@
 package com.msa.comment.domain;
 
+import com.msa.post.domain.Post;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -27,6 +28,10 @@ public class Comment {
     @Column(name="content")
     private String content;
 
+    //many comments to one post
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -40,4 +45,9 @@ public class Comment {
     public Comment() {
 
     }
+
+    public void setContent(String content) {
+        this.content=content;
+    }
+
 }

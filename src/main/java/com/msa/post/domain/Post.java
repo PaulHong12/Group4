@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -28,10 +29,16 @@ public class Post {
 
 	@Column(name="title")
 	private String title;
-	
-	@Column(name="content")
+
+	@Column(name="content", columnDefinition="TEXT")
 	private String content;
-	
+
+	@Column(name = "date")
+	private LocalDate date;
+
+	@Column(name="thumbnail")
+	private String thumbnail; // URL or path of the thumbnail image
+
 	@CreatedDate
 	private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -50,7 +57,11 @@ public class Post {
 		this.title = title;
 		this.content = content;
 	}
-
+	public Post(String title, String content, String thumbnail) {
+		this.title = title;
+		this.content = content;
+		this.thumbnail = thumbnail;
+	}
 	public Post(String title, String content, Set<Comment> comments) {
 		this.title = title;
 		this.content = content;
@@ -59,5 +70,21 @@ public class Post {
 
 	public PostDto convert2DTO() {
 		return new PostDto(this.getTitle(), this.getContent());
+	}
+
+	public LocalDate getDate() {
+		return this.createdAt.toLocalDate(); //debug
+	}
+
+	public void addComment(Comment newComment) {
+
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 }

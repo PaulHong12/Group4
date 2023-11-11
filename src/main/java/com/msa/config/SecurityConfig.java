@@ -1,8 +1,8 @@
 package com.msa.config;
 
+import com.msa.auth.AuthenticationSuccessHandler;
 import com.msa.auth.JwtAuthFilter;
-import com.msa.auth.JwtTokenProvider;
-import com.msa.member.repository.RefreshTokenRepository;
+import com.msa.member.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,18 +19,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         // 정적 자원에 대해서 Security를 적용하지 않음으로 설정
         return web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
@@ -43,21 +40,19 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers("/", "/login", "/signup", "/members/auth/**",
-                        "/h2-console/**")
+                        "/h2-console/**", "/style.css")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
-                
-                //토큰 승인 필터 -> 1. username과 비밀번호 authenticate.
-                // 추가된 필터에서
-                // SecurityContextHolder.getContext().setAuthentication(authentication);
-                // 를 설정해줬기 떄문에 5. 번에서 글이 보임(그림 참조)
-                .addFilterBefore(new JwtAuthFilter(jwtTokenProvider, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login()
+                .loginPage("/login")
+                .defaultSuccessUrl("/")
+                .successHandler(authenticationSuccessHandler)
+                .userInfoEndpoint()
+                .userService(oAuth2UserService);
 
         return http.build();
 
-
-
     }
-
 }

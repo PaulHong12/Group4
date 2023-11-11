@@ -1,9 +1,11 @@
 package com.msa.auth;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -103,9 +105,8 @@ public class JwtTokenProvider {
         }
     }
 
-    // 토큰을 가지고 쿠키를 만듦!! 쿠키 안에 토큰이 있음!!
-    public javax.servlet.http.Cookie generateCookie(String from, String token) {
-        javax.servlet.http.Cookie cookie = new Cookie(from, token);
+    public Cookie generateCookie(String from, String token) {
+        Cookie cookie = new Cookie(from, token);
 
         cookie.setPath("/");
         cookie.setHttpOnly(true); // XSS 공격을 막기 위한 설정

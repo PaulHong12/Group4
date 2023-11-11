@@ -1,4 +1,4 @@
-package com.msa.friend.controller;
+/*package com.msa.friend.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,4 +11,4 @@ public class FriendPageController {
     public String getFriendPage() {
         return "friend_page";
     }
-}
+}*/

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sign Up</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function sendSignupJSON() {
+            event.preventDefault();
+            var username = document.getElementById('username').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+
+            // You might want to add validation here to check if passwords match, etc.
+
+
+
+            var jsonData = JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword
+            });
+
+            fetch('/members/auth/signUp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: jsonData
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch((error) => console.error('Error:', error));
+        }
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('#signup_btn').click(function(){
+                console.log("signup clicked!!!");
+
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+                if(!username || !password) {
+                    alert("필수 항목을 채워주세요.");
+                    return;
+                }
+
+                var param = {
+                    email: username,
+                    userName: "test-user",
+                    password: password,
+                }
+
+                $.ajax({
+                    url: "/members/auth/signUp",
+                    method: "POST",
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(param)
+                }).then(function(data) {
+                    console.log("s");
+                    alert("회원 가입이 되었습니다.");
+                    window.location.href = '/';
+                }, function(err) {
+                    console.log("f");
+                    alert(err);
+                    window.location.reload();
+                });
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<form onsubmit="sendSignupJSON()">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" />
+    </div>
+    <div>
+        <label for="confirm-password">Confirm Password:</label>
+        <input type="password" id="confirm-password" name="confirmPassword" />
+    </div>
+    <div>
+        <button type="submit" id="signup_btn">Sign Up</button>
+    </div>
+</form>
+</body>
+</html>

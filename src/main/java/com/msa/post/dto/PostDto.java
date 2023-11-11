@@ -11,4 +11,11 @@ public record PostDto(
         String content
 ) {
 
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getContent() {
+        return this.content;
+    }
 }
