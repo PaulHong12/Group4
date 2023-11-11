@@ -1,87 +1,77 @@
 package com.msa.post.controller;
 
-import java.util.List;
-import java.util.Optional;
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.msa.post.dto.commentDto;
 import com.msa.post.domain.Post;
 import com.msa.post.service.PostService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.msa.post.dto.PostDto;
 import com.msa.post.dto.ResultDto;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+
+// TO DO:URI 수정
 @RestController
 @RequestMapping("/posts")
-@Tag(name = "Post API", description = "Post 기능 API")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    @PostMapping("")
-    @Operation(summary = "add post", description = "Post 를 추가하는 API")
-    public ResultDto<PostDto> addPost(
-            @Parameter(name = "dto", description = "post dto")
-            @RequestBody PostDto dto) {
-        return new ResultDto<>(200, "", postService.addPost(dto.title(), dto.content()).convert2DTO());
+    @PostMapping("/addPost") // No need for "/addPost" since we're posting to "/posts"
+    public ResponseEntity<ResultDto<PostDto>> addPost(@RequestBody PostDto dto) {
+        Post newPost = postService.addPost(dto.getTitle(), dto.getContent());
+        String formattedDate = LocalDate.now().format(dateFormatter);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{date}")
+                .buildAndExpand(formattedDate)
+                .toUri();
+        return ResponseEntity.created(location).body(new ResultDto<>(201, "Post added", newPost.convert2DTO()));
     }
 
     @PutMapping("/{postId}")
-    @Operation(summary = "update post", description = "Post 를 수정하는 API")
-    public ResultDto<PostDto> updatePost(
-            @Parameter(name = "dto", description = "post dto")
+    public ResponseEntity<ResultDto<PostDto>> updatePost(
+            @PathVariable Long postId,
             @RequestBody PostDto dto) {
-      //  return new ResultDto<>(200, "", postService.updatePost(dto.title(), dto.content()).convert2DTO());
-    return null;
+        Post updatedPost = postService.updatePost(postId, dto.getTitle(), dto.getContent());
+        return ResponseEntity.ok(new ResultDto<>(200, "Post updated", updatedPost.convert2DTO()));
     }
 
-    @PostMapping("/{postId}")
-    @Operation(summary = "add comment", description = "댓글을 추가하는 API")
-    public ResultDto<PostDto> addComment(
-            @Parameter(name = "dto", description = "comment dto")
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<ResultDto<PostDto>> addComment(
+            @PathVariable int postId,
             @RequestBody commentDto dto) {
-        return null;
-        //return new ResultDto<>(200, "", postService.addComment(dto.postId(), dto.content()).convert2DTO());
-    }
-
-    @GetMapping("")
-    public ResultDto<List<PostDto>> getPostList() {
-        List<PostDto> postDtos = postService.getPostList()
-                .stream()
-                .map(Post::convert2DTO)
-                .toList();
-
-        return new ResultDto<>(200, "ok", postDtos);
+        Post updatedPost = postService.addComment(postId, String.valueOf(dto.getContent()));
+        return ResponseEntity.ok(new ResultDto<>(200, "Comment added", updatedPost.convert2DTO()));
     }
 
     @GetMapping("/{postId}")
-    public ResultDto<PostDto> getPost(@PathVariable("postId") long postId) {
-        Optional<PostDto> optPost = postService.getPost(postId)
-                .map(Post::convert2DTO);
-
-        if (optPost.isEmpty()) {
-            throw new IllegalArgumentException("not exist post : %s".formatted(postId));
-        } else {
-            return new ResultDto<>(200, "ok", optPost.get());
-        }
-
+    public ResponseEntity<ResultDto<PostDto>> getPost(@PathVariable("postId") long postId) {
+        return postService.getPost(postId)
+                .map(post -> ResponseEntity.ok(new ResultDto<>(200, "ok", post.convert2DTO())))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
     @DeleteMapping("/{postId}")
-    public ResultDto deletePost(@PathVariable("postId") long postId) {
-        postService.getPost(postId)
-                .ifPresentOrElse(post -> postService.deletePost(postId),
-                        () -> {
-                            throw new IllegalArgumentException("not exist post : %s".formatted(postId));
-                        });
-
-        return new ResultDto<>(200, "ok", null);
+    public ResponseEntity<ResultDto<Void>> deletePost(@PathVariable("postId") long postId) {
+        return postService.getPost(postId)
+                .map(post -> {
+                    postService.deletePost(postId);
+                    return new ResponseEntity<ResultDto<Void>>(new ResultDto<>(200, "Post deleted", null), HttpStatus.OK);
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
 
 }
+
+

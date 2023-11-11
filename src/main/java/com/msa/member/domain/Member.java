@@ -1,11 +1,10 @@
 package com.msa.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.msa.member.repository.dto.UserDto;
+import com.msa.member.dto.UserDto;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -76,7 +75,11 @@ public class Member implements UserDetails {
     public Member() {
 
     }
-
+    public Member(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
     public Member(String username, String email, String password, Set<String> roles) {
         this.username = username;
         this.email = email;

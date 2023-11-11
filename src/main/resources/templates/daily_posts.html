@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Daily Posts</title>
+</head>
+<body>
+<h1>Posts for <span th:text="${date}"></span></h1>
+<div th:each="post : ${posts}">
+    <!-- Display each post -->
+    <div th:text="${post.title}">Post Title</div>
+    <p th:text="${post.content}">Post content</p>
+    <!-- Add more post details as needed -->
+</div>
+</body>
+</html>

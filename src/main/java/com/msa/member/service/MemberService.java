@@ -42,10 +42,10 @@ public class MemberService {
 
     @Transactional
     public TokenInfo login(String email, String password) {
-        // step 1
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(email, password);
-        // step 2
+
         Authentication authentication = authenticationManagerBuilder
                 .getObject().authenticate(authenticationToken);
 
@@ -54,13 +54,11 @@ public class MemberService {
         if (member.isEmpty()) {
             throw new AccessDeniedException("not found user");
         }
-        //step 3
-        // accessToken, refreshToken 생성!!
+
+        // 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
 
-        //step 4
-        // refresh token 없으면 생성 or update. 일정 시간 지나면 로그아웃 되므로,
-        // 다시 남은 시간 최대로 초기화
+        // refresh token 없으면 생성 or update
         refreshTokenRepository.findByMember_Email(member.get().getEmail())
                 .ifPresentOrElse(refreshToken -> {
                     refreshToken.setRefreshToken(tokenInfo.refreshToken());

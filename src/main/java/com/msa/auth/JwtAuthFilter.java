@@ -1,12 +1,13 @@
 package com.msa.auth;
+
 import com.msa.member.domain.RefreshToken;
 import com.msa.member.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,18 +20,15 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    //Filter이므로 HTTPServeletRequest를 받아서 필터링한다.
-
-    @Override    // overrided doFilter(), so It's called for each HTTP request w/o specifying to do so.
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //HttpServletRequest request가 쿠키를 가지고 있음!!
-        //Cookie 오브젝트가 토큰을 가지고 있음!! TokenProvider클래스의 generateCookies() 참조!!
         Optional<String> accessToken = extractTokenFromCookie(request, "accessToken");
         Optional<String> refreshToken = extractTokenFromCookie(request, "refreshToken");
 
@@ -38,8 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (accessToken.isPresent() && jwtTokenProvider.validateToken(accessToken.get()) == JwtCode.ACCESS) {
             // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken.get());
-            // (매우중요) "SecurityContext" 에 Authentication 객체를 저장합니다.
-            //이거 만들기 전에는 여기(5. 번) 에 들어갈 Authentication 없었기 때문에 안보였던거.
+            // SecurityContext 에 Authentication 객체를 저장합니다.
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else if (accessToken.isPresent() && jwtTokenProvider.validateToken(accessToken.get()) == JwtCode.EXPIRED) {
             log.info("Access token expired");
@@ -88,7 +85,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    //단순하게 uri 필터 해야하는지지 안해야하는지 리턴.
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // request 에서 요청 path 추출
         String path = request.getServletPath();

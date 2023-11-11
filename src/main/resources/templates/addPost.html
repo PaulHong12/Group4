@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Post</title>
+</head>
+<body>
+<h1>Add New Post</h1>
+<form th:action="@{/posts/addPost}" th:object="${postDto}" method="post">
+    <div>
+        <label for="title">Title:</label>
+        <!-- Bind the input field to the 'title' field of the postDto object -->
+        <input type="text" id="title" th:field="*{title}" />
+    </div>
+    <div>
+        <label for="content">Content:</label>
+        <!-- Bind the textarea to the 'content' field of the postDto object -->
+        <textarea id="content" th:field="*{content}"></textarea>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+</body>
+</html>
