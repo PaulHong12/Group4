@@ -4,77 +4,44 @@
     <title>Sign Up</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        function sendSignupJSON() {
-            event.preventDefault();
-            var username = document.getElementById('username').value;
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
-            var confirmPassword = document.getElementById('confirm-password').value;
-
-            // You might want to add validation here to check if passwords match, etc.
-
-
-
-            var jsonData = JSON.stringify({
-                username: username,
-                email: email,
-                password: password,
-                confirmPassword: confirmPassword
-            });
-
-            fetch('/members/auth/signUp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: jsonData
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch((error) => console.error('Error:', error));
-        }
-    </script>
-    <script>
-        $(document).ready(function(){
-            $('#signup_btn').click(function(){
+        $(document).ready(function() {
+            $('#signup_btn').click(function(event) {
+                event.preventDefault(); // Prevent the default form submission
                 console.log("signup clicked!!!");
 
                 var username = $('#username').val();
+                var email = $('#email').val();
                 var password = $('#password').val();
+                var confirmPassword = $('#confirm-password').val();
 
-                if(!username || !password) {
-                    alert("필수 항목을 채워주세요.");
-                    return;
-                }
+                // Add validation here (e.g., check if passwords match)
 
                 var param = {
-                    email: username,
-                    userName: "test-user",
+                    username: username,
+                    email: email,
                     password: password,
-                }
+                };
 
                 $.ajax({
                     url: "/members/auth/signUp",
                     method: "POST",
-                    dataType: 'json',
                     contentType: 'application/json',
                     data: JSON.stringify(param)
                 }).then(function(data) {
-                    console.log("s");
+                    console.log("Success:", data);
                     alert("회원 가입이 되었습니다.");
-                    window.location.href = '/';
+                    window.location.href = '/{username}/home';
                 }, function(err) {
-                    console.log("f");
-                    alert(err);
+                    console.error("Error:", err);
+                    alert("Error during sign up.");
                     window.location.reload();
                 });
-                return false;
             });
         });
     </script>
 </head>
 <body>
-<form onsubmit="sendSignupJSON()">
+<form>
     <div>
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" />

@@ -1,14 +1,14 @@
 package com.msa.post.service;
 
+import com.msa.post.domain.Post;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import com.msa.post.domain.Post;
-
 public interface PostService {
 	
-	Post addPost(String title, String content);
+	Post addPost(String title, String content, String username);
 	
 	Optional<Post> getPost(long id);
 	
@@ -27,4 +27,10 @@ public interface PostService {
 	List<Post> getPostsByDateRange(LocalDate start, LocalDate end);
 
 	Post updatePost(long postId, String title, String content);
+
+    List<Post> getPostsByDateAndMember(LocalDate now, String username);
+
+	List<Post> getPostsByDateRangeAndMember(LocalDate start, LocalDate end, String username);
+
+	Optional<Post> findById(Long postId);
 }

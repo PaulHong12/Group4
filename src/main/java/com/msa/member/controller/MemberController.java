@@ -36,7 +36,7 @@ public class MemberController {
 
     @PostMapping("/auth/signUp")
     public ResponseEntity<ResultDto<Member>> signUp(@RequestBody SignupDto signupDto) {
-        Member newMember = memberService.addUser(signupDto.userName(), signupDto.email(), signupDto.password());
+        Member newMember = memberService.addUser(signupDto.username(), signupDto.email(), signupDto.password());
         return ResponseEntity.ok()
                 .body(new ResultDto<>(200, "", newMember));
     }

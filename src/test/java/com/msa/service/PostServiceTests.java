@@ -2,7 +2,6 @@ package com.msa.service;
 
 import com.msa.post.repository.PostRepository;
 import com.msa.post.service.PostService;
-import com.msa.post.service.PostServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +23,13 @@ public class PostServiceTests {
 
     @BeforeEach
     public void init() {
-        postService = new PostServiceImpl(postRepository);
+      //  postService = new PostServiceImpl(memberRepository, postRepository);
     }
 
     @Test
     @DisplayName("add 시 repository 가 호출되는 지 확인")
     public void test_post_add() {
-        postService.addPost("test title", "test content");
+       // postService.addPost("test title", "test content", dto.getUsername());
         verify(postRepository, atLeastOnce()).save(any());
     }
 

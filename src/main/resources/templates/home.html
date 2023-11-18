@@ -26,5 +26,25 @@
 <body>
 <h1>Welcome</h1>
 <button id="logout">Logout</button>
+<a href="/addPost">Add New Post</a>
+<table>
+  <thead>
+  <!-- Table header for days of the week -->
+  </thead>
+  <tbody>
+  <tr th:each="week : ${weeks}">
+    <td th:each="day : ${week}">
+      <span th:text="${day}"></span>
+      <div th:if="${postsMap.containsKey(day)}">
+        <!-- Loop through posts for this day -->
+        <div th:each="post : ${postsMap.get(day)}">
+          <!--Post Detail(daily_posts.html)로 보내주는 URI -->
+          <a th:href="@{/home/{username}/{date}(username=${username}, date=${post.date})}" th:text="${post.title}">Post Title</a>
+        </div>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
 </body>
 </html>

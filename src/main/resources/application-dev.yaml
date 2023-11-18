@@ -24,10 +24,6 @@ spring:
         show_sql: true
     defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  sql:
-    init:
-      data-locations: classpath:data.sql
-      mode: always
   thymeleaf:
     encoding: UTF-8
 

@@ -1,15 +1,82 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Daily Posts</title>
+    <title>Today's Post</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+ $('#addComment').click(function(event) {
+                event.preventDefault();
+                var postId = $("#postId").val();
+                var creator = $("#creator").val();
+                var date = $("#date").val();
+                var formData = {
+                    content: $('#commentInput').val()
+                };
+                $.ajax({
+                    url: '/posts/' + postId + '/comments',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/home/' + creator + '/' + date;
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error adding post:', xhr.responseText);
+                    }
+                });
+            });
+$('#editPostBtn').click(function(event) {
+    event.preventDefault();
+    var postId = $(this).siblings(".postId").val(); // Get the postId
+
+    $.ajax({
+        url: '/editPost/' + postId, // Ensure the slash is correctly placed
+        type: 'GET',
+        success: function(response) {
+            window.location.href = '/editPost/' + postId; // Correct redirection URL
+        },
+        error: function(xhr, status, error) {
+            console.error('Error sending GET request:', error);
+        }
+    });
+});
+        });
+    </script>
 </head>
 <body>
 <h1>Posts for <span th:text="${date}"></span></h1>
 <div th:each="post : ${posts}">
-    <!-- Display each post -->
-    <div th:text="${post.title}">Post Title</div>
-    <p th:text="${post.content}">Post content</p>
-    <!-- Add more post details as needed -->
+    <!-- 글 수정, 삭제 요청 Ajax로 postId 포함해서 postService로 알맞게 보내기.-->
+    <div>
+        <h2 th:text="${post.title}">Post Title</h2>
+        <p th:text="${post.content}">Post content</p>
+    </div>
+    <button type="button" class="editPostBtn" id="editPostBtn">Edit Post</button>
+    <input type="hidden" class="postId" th:value="${post.id}"/>
+    <!-- Comment Input Form
+    오늘 TO DO: AJAX로 JSON형태로 addComment버튼이 클릭되었을때 POST posts/{postId}/comments
+    로 요청 보내도록 하기.-->
+    <form id="commentForm" method="post">
+        <textarea id="commentInput" name="content" placeholder=""></textarea>
+        <input type="hidden" id ="postId" th:value="${post.id}"/>
+        <input type="hidden" id ="creater" th:value="${post.creator}"/>
+        <input type="hidden" id ="date" th:value="${post.date}"/>
+        <button type="submit" id="addComment">Add Comment</button>
+    </form>
+
+    <!-- Display Comments -->
+    <div th:each="comment : ${post.comments}">
+        <p th:text="${comment.content}">Comment content</p>
+        <!-- 댓글 수정, 삭제 요청 Ajax로 commentId 포함해서 commentService -> commentRepository로 알맞게 보내기.-->
+        <!-- Edit Comment Button -->
+        <button th:onclick="'editComment(' + ${comment.id} + ');'" id="editComment">Edit</button>
+        <!-- Delete Comment Button -->
+        <form th:action="@{/comments/{comment.id}}" method="post">
+            <input type="hidden" name="_method" value="DELETE"/>
+            <input type="hidden" name="commentId" th:value="${comment.id}"/>
+            <button type="submit">Delete</button>
+        </form>
+    </div>
 </div>
 </body>
-</html>

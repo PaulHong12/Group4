@@ -4,7 +4,7 @@ import com.msa.comment.domain.Comment;
 import com.msa.post.domain.Post;
 import com.msa.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
-
+import com.msa.member.repository.MemberRepository;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
@@ -12,17 +12,19 @@ import java.util.*;
 @Service
 public class PostServiceImpl implements PostService {
 
+	//private final MemberRepository memberRepository;
 	private final PostRepository postRepository;
 
-	public PostServiceImpl(PostRepository postRepository) {
+	public PostServiceImpl(MemberRepository memberRepository, PostRepository postRepository) {
+	//	this.memberRepository = memberRepository;
 		this.postRepository = postRepository;
 	}
 
 
 	@Override
-	public Post addPost(String title, String content) {
+	public Post addPost(String title, String content, String username) {
 		// 테스트 코드가 동작하도록 구현
-		Post post = new Post(title, content);
+		Post post = new Post(title, content, username);
 		return postRepository.save(post);
 	}
 
@@ -53,11 +55,9 @@ public class PostServiceImpl implements PostService {
 			Post post = postOptional.get();
 			Comment newComment = new Comment();
 			newComment.setContent(content);
-			// Assuming Post has a method to add comments
 			post.addComment(newComment);
-			return postRepository.save(post); // Save the updated post with the new comment
+			return postRepository.save(post); // This should save both post and comment due to CascadeType.ALL
 		} else {
-			// Handle the case where the post does not exist
 			throw new IllegalArgumentException("Post with ID " + postId + " not found.");
 		}
 	}
@@ -84,6 +84,21 @@ public class PostServiceImpl implements PostService {
 			// Handle the case where the post does not exist
 			throw new IllegalArgumentException("Post with ID " + postId + " not found.");
 		}
+	}
+
+	@Override
+	public List<Post> getPostsByDateAndMember(LocalDate now, String username) {
+		return null;
+	}
+
+	@Override
+	public List<Post> getPostsByDateRangeAndMember(LocalDate start, LocalDate end, String username) {
+		return postRepository.findByCreatorAndDateBetween(username, start, end);
+	}
+
+	@Override
+	public Optional<Post> findById(Long postId) {
+		return postRepository.findById(postId);
 	}
 
 	@Override

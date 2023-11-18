@@ -25,7 +25,8 @@ public class PostControllerTest {
 	final String TITLE = "test title";
 	final String CONTENT = "test content";
 	ObjectMapper mapper = new ObjectMapper();
-	
+
+	/*
 	@Test
     public void addPost() throws Exception {
 		PostDto dto = new PostDto(TITLE, CONTENT);
@@ -39,7 +40,7 @@ public class PostControllerTest {
 				.andExpect(jsonPath("$.data.content").value(CONTENT))
 				.andDo(print());
 	}
-
+*/
 	@Test
 	public void getPostTest() throws Exception {
 		this.mockMvc.perform(

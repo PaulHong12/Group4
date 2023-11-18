@@ -1,5 +1,6 @@
 package com.msa.comment.domain;
 
+import com.msa.comment.dto.CommentDto;
 import com.msa.post.domain.Post;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,11 +26,11 @@ public class Comment {
     @Column
     private String nickName;
 
-    @Column(name="content")
+    @Column(name = "content")
     private String content;
 
     //many comments to one post
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
     @CreationTimestamp
@@ -37,6 +38,11 @@ public class Comment {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
 
     public Comment(String content) {
         this.content = content;
@@ -47,7 +53,13 @@ public class Comment {
     }
 
     public void setContent(String content) {
-        this.content=content;
+        this.content = content;
     }
 
+    public Object convertToDTO() {
+        CommentDto dto = new CommentDto();
+        dto.setId(this.id);       // Set the id from Comment to CommentDto
+        dto.setContent(this.content); // Set the content from Comment to CommentDto
+        return dto;
+    }
 }

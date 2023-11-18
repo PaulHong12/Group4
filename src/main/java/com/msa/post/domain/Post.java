@@ -1,6 +1,7 @@
 package com.msa.post.domain;
 
 import com.msa.comment.domain.Comment;
+import com.msa.member.domain.Member;
 import com.msa.post.dto.PostDto;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,9 +25,13 @@ import javax.persistence.*;
 public class Post {
 
 	@Id
+	@Getter
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", updatable = false)
 	private long id;
+
+	@Column(name = "creator")
+	private String creator;
 
 	@Column(name="title")
 	private String title;
@@ -33,8 +39,9 @@ public class Post {
 	@Column(name="content", columnDefinition="TEXT")
 	private String content;
 
+	//
 	@Column(name = "date")
-	private LocalDate date;
+	private LocalDate date = LocalDate.now();
 
 	@Column(name="thumbnail")
 	private String thumbnail; // URL or path of the thumbnail image
@@ -45,21 +52,22 @@ public class Post {
 	@LastModifiedDate
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "id")
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Comment> comments;
 	
 	public Post() {
 		super();
 	}
 
-	public Post(String title, String content) {
+	public Post(String title, String content, String username) {
 		this.title = title;
 		this.content = content;
+		this.creator = username;
 	}
-	public Post(String title, String content, String thumbnail) {
+	public Post(String title, String content, String username, String thumbnail) {
 		this.title = title;
 		this.content = content;
+		this.creator = username;
 		this.thumbnail = thumbnail;
 	}
 	public Post(String title, String content, Set<Comment> comments) {
@@ -68,8 +76,12 @@ public class Post {
 		this.comments = comments;
 	}
 
+	public String getCreator(){
+		return this.creator;
+	}
+
 	public PostDto convert2DTO() {
-		return new PostDto(this.getTitle(), this.getContent());
+		return new PostDto(this.getTitle(), this.getContent(),this.creator);
 	}
 
 	public LocalDate getDate() {
@@ -77,7 +89,11 @@ public class Post {
 	}
 
 	public void addComment(Comment newComment) {
-
+		if (comments == null) {
+			comments = new HashSet<>();
+		}
+		comments.add(newComment);
+		newComment.setPost(this);
 	}
 
 	public void setTitle(String title) {
@@ -86,5 +102,9 @@ public class Post {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public long getId() {
+		return id;
 	}
 }

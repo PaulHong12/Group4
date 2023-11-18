@@ -8,19 +8,19 @@ import com.msa.member.repository.MemberRepository;
 import com.msa.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +51,9 @@ public class MemberService {
 
         Optional<Member> member = memberRepository.findByEmail(email);
 
-        if (member.isEmpty()) {
-            throw new AccessDeniedException("not found user");
-        }
+       // if (member.isEmpty()) {
+         //   throw new AccessDeniedException("not found user");
+        //}
 
         // 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication, email);
@@ -70,9 +70,35 @@ public class MemberService {
         return tokenInfo;
     }
 
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        // handle logout
-        // redirect the user to the front page
+    public Member findByUsername(String username) {
+        // Assuming you have a MemberRepository
+        return memberRepository.findByUsername(username);
+    }
 
+    public Member getLoggedInUser(HttpServletRequest request) {
+        String username = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            username = authentication.getName();
+        }
+        return (username != null) ? findByUsername(username) : null;
+    }
+
+    public boolean isFriend(UUID profileUserId, UUID loggedInUserId) {
+        if (profileUserId.equals(loggedInUserId)) {
+            return true; // A user is always a friend of themselves
+        }
+        Member profileUser = memberRepository.findById(profileUserId).orElse(null);
+        Member loggedInUser = memberRepository.findById(loggedInUserId).orElse(null);
+
+        if (profileUser == null || loggedInUser == null) {
+            return false;
+        }
+
+        return profileUser.getFriends().contains(loggedInUser) && loggedInUser.getFriends().contains(profileUser);
+    }
+
+    public Optional<Member> findByEmail(String username) {
+        return memberRepository.findByEmail(username);
     }
 }

@@ -2,23 +2,46 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Post</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#submit').click(function(event){
+                event.preventDefault(); // Prevent the default form submission
+                var username = "[[${postDto.username}]]"; // Retrieve username from postDto
+                var formData = {
+                    title: $('#title').val(),
+                    content: $('#content').val(),
+                    username: username
+                };
+                $.ajax({
+                    url: '/posts/addPost',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/' + username + '/home';
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error adding post:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <h1>Add New Post</h1>
-<form th:action="@{/posts/addPost}" th:object="${postDto}" method="post">
+<form>
     <div>
         <label for="title">Title:</label>
-        <!-- Bind the input field to the 'title' field of the postDto object -->
-        <input type="text" id="title" th:field="*{title}" />
+        <input type="text" id="title" name="title" />
     </div>
     <div>
         <label for="content">Content:</label>
-        <!-- Bind the textarea to the 'content' field of the postDto object -->
-        <textarea id="content" th:field="*{content}"></textarea>
+        <textarea id="content" name="content"></textarea>
     </div>
     <div>
-        <button type="submit">Submit</button>
+        <button type="submit" id="submit">Submit</button>
     </div>
 </form>
 </body>
-</html>
