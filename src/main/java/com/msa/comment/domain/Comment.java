@@ -2,6 +2,7 @@ package com.msa.comment.domain;
 
 import com.msa.comment.dto.CommentDto;
 import com.msa.post.domain.Post;
+import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Getter
 @Table(name = "comment")
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
@@ -20,7 +22,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
+    @Column(name = "id")
     private long id;
 
     @Column
@@ -33,6 +35,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
     @CreationTimestamp
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -40,12 +43,14 @@ public class Comment {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
 
-    public void setPost(Post post) {
+    public void setPost(Post post, Long postId) {
+        System.out.print(postId);
         this.post = post;
     }
 
-    public Comment(String content) {
+    public Comment(String content, Post post, Long postId) {
         this.content = content;
+        this.post = post;
     }
 
     public Comment() {
@@ -54,6 +59,10 @@ public class Comment {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getContent() {
+        return this.content;
     }
 
     public Object convertToDTO() {

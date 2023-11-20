@@ -60,7 +60,7 @@ public class CalendarController {
     public String showLoginForm() {
         return "login";
     }
-
+/*
     @GetMapping("/{username}/home")
     public String home(@PathVariable String username, Model model, HttpServletRequest request) {
     Map<LocalDate, List<Post>> postsMap = new HashMap<>();
@@ -93,9 +93,9 @@ public class CalendarController {
         model.addAttribute("weeks", weeks);
         return "home";
     }
+*/
 
 
-    /*
     //메인화면. 캘린더 API와 합치기 시도중
 @GetMapping("/{username}/home")
 public String home(@PathVariable String username, Model model, HttpServletRequest request) {
@@ -105,46 +105,31 @@ public String home(@PathVariable String username, Model model, HttpServletReques
     Member loggedInUser = memberService.getLoggedInUser(request); // Implement this method to identify the logged-in user
     boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
 
-    LocalDate start = LocalDate.now().withDayOfMonth(1);
-    LocalDate end = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
-    List<Post> posts;
-    if (profileUser.getUsername().equals(loggedInUser.getUsername()) || isFriend) {
-        posts = postService.getPostsByDateRangeAndMember(start, end, username);
-    } else {
+    if (!profileUser.getUsername().equals(loggedInUser.getUsername()) || !isFriend) {
         // Redirect if not the owner or a friend
         String loggedInUsername = loggedInUser.getUsername();
         return "redirect:/" + loggedInUsername + "/home";
     }
 
-    // postMap initialization
+    // Initialize days array
+    LocalDate start = LocalDate.now().withDayOfMonth(1);
+    LocalDate end = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+    List<Post> posts = postService.getPostsByDateRangeAndMember(start, end, username);
+    int[] days = new int[end.getDayOfMonth()];
+
+    // Update days array based on posts
     for (Post post : posts) {
-        LocalDate date = post.getDate(); // Assuming Post has a getDate() method
-        postsMap.computeIfAbsent(date, k -> new ArrayList<>()).add(post);
+        LocalDate date = post.getDate();
+        if (date.getMonth().equals(LocalDate.now().getMonth())) {
+            days[date.getDayOfMonth() - 1] = 1;
+        }
     }
-
-    // html로 보내줄 EventDTO 만들기.
-    try {
-        List<EventDTO> events = posts.stream()
-                .map(post -> new EventDTO(
-                        String.valueOf(post.getId()),
-                        post.getDate().toString(), // Assuming Post has a getDate() method that returns LocalDate
-                        post.getTitle(),
-                        "/home/" + username + "/" + post.getDate().toString() // URL pattern
-                ))
-                .collect(Collectors.toList());
-        model.addAttribute("events", events);
-    } catch (Exception e) {
-        model.addAttribute("error", "Invalid date or no posts available.");
-    }
-
-    // Existing logic to set model attributes
-    //[model.addAttribute("postsMap", postsMap);
-   // List<List<LocalDate>> weeks = CalendarUtils.generateCalendarData();
-    //model.addAttribute("weeks", weeks);
+    // Add to model
+    model.addAttribute("days", days);
 
     return "home";
 }
-*/
+
     @GetMapping({"/", "/index"})
     public String calendar(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

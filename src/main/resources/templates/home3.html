@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Login</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function() {
+        $('#logout').click(function(event) {
+            event.preventDefault();  // Prevent the default button action
+
+            $.ajax({
+                url: "/members/auth/logout",
+                method: "POST",
+                contentType: 'application/json'
+            }).done(function() {
+                // Handle successful logout
+                window.location.href = '/login';
+            }).fail(function() {
+                // Handle logout error
+                alert("Logout failed.");
+            });
+        });
+    });
+  </script>
+</head>
+<body>
+<h1>Welcome</h1>
+<button id="logout">Logout</button>
+<a href="/addPost">Add New Post</a>
+<table>
+  <thead>
+  <!-- Table header for days of the week -->
+  </thead>
+  <tbody>
+  <tr th:each="week : ${weeks}">
+    <td th:each="day : ${week}">
+      <span th:text="${day}"></span>
+      <div th:if="${postsMap.containsKey(day)}">
+        <!-- Loop through posts for this day -->
+        <div th:each="post : ${postsMap.get(day)}">
+          <!--Post Detail(daily_posts.html)로 보내주는 URI -->
+          <a th:href="@{/home/{username}/{date}(username=${username}, date=${post.date})}" th:text="${post.title}">Post Title</a>
+        </div>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

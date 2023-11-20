@@ -81,7 +81,10 @@ public class PostController {
     @PostMapping("/{postId}/comments")
     public ResponseEntity<ResultDto<PostDto>> addComment(
             @PathVariable long postId,
-            @RequestBody CommentDto dto) {
+            @RequestBody CommentDto dto,
+            @RequestParam(required = false) String content) {
+        String commentContent = (content != null) ? content : dto.getContent();
+
         Post updatedPost = postService.addComment(postId, String.valueOf(dto.getContent()));
         return ResponseEntity.ok(new ResultDto<>(200, "Comment added", updatedPost.convert2DTO()));
     }

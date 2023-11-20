@@ -5,14 +5,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
- $('#addComment').click(function(event) {
-                event.preventDefault();
-                var postId = $("#postId").val();
+ $(document).on('click', '.addComment', function(event) {
+    event.preventDefault();
+    var postId = $(this).closest('div').find('.postId').val(); // Adjust this to
                 var creator = $("#creator").val();
                 var date = $("#date").val();
-                var formData = {
-                    content: $('#commentInput').val()
-                };
+    var formData = {
+        content: $(this).closest('form').find('#commentInput').val()
+    };
                 $.ajax({
                     url: '/posts/' + postId + '/comments',
                     type: 'POST',
@@ -62,7 +62,7 @@ $('#editPostBtn').click(function(event) {
         <input type="hidden" id ="postId" th:value="${post.id}"/>
         <input type="hidden" id ="creater" th:value="${post.creator}"/>
         <input type="hidden" id ="date" th:value="${post.date}"/>
-        <button type="submit" id="addComment">Add Comment</button>
+        <button type="button" class="addComment">Add Comment</button>
     </form>
 
     <!-- Display Comments -->

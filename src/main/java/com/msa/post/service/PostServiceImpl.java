@@ -1,10 +1,13 @@
 package com.msa.post.service;
 
 import com.msa.comment.domain.Comment;
+import com.msa.comment.repository.CommentRepository;
 import com.msa.post.domain.Post;
 import com.msa.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import com.msa.member.repository.MemberRepository;
+
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
@@ -14,10 +17,12 @@ public class PostServiceImpl implements PostService {
 
 	//private final MemberRepository memberRepository;
 	private final PostRepository postRepository;
+	private final CommentRepository commentRepository;
 
-	public PostServiceImpl(MemberRepository memberRepository, PostRepository postRepository) {
+	public PostServiceImpl(MemberRepository memberRepository, PostRepository postRepository, CommentRepository commentRepository) {
 	//	this.memberRepository = memberRepository;
 		this.postRepository = postRepository;
+		this.commentRepository = commentRepository;
 	}
 
 
@@ -50,16 +55,21 @@ public class PostServiceImpl implements PostService {
 
 	@Transactional
 	public Post addComment(long postId, String content) {
-		Optional<Post> postOptional = postRepository.findById(postId);
-		if (postOptional.isPresent()) {
-			Post post = postOptional.get();
-			Comment newComment = new Comment();
-			newComment.setContent(content);
-			post.addComment(newComment);
-			return postRepository.save(post); // This should save both post and comment due to CascadeType.ALL
-		} else {
-			throw new IllegalArgumentException("Post with ID " + postId + " not found.");
-		}
+		//Optional<Post> postOptional = postRepository.findById(postId);
+		//if (postOptional.isPresent()) {
+			//Post post = postOptional.get();
+			System.out.print(postId);
+			//이게 문제인듯. findByCreatorAndDateBetween()사용해보기..
+			Post post = postRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+			Comment newComment = new Comment(content, post, postId);
+			System.out.print(postId);
+			newComment.setPost(post, postId);
+			commentRepository.save(newComment);// This should save both post and comment due to CascadeType.ALL
+		//} else {tId
+		//	throw new IllegalArgumentException("Post with ID " + postId + " not found.");
+		//}
+		return post;
 	}
 	@Override
 	public List<Post> getPostsByDate(LocalDate date) {

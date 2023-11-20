@@ -13,9 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -27,8 +25,8 @@ public class Post {
 	@Id
 	@Getter
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", updatable = false)
-	private long id;
+	@Column(name = "id")
+	public long id;
 
 	@Column(name = "creator")
 	private String creator;
@@ -53,8 +51,8 @@ public class Post {
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<Comment> comments;
-	
+	private List<Comment> comments = new ArrayList<>();
+
 	public Post() {
 		super();
 	}
@@ -70,11 +68,11 @@ public class Post {
 		this.creator = username;
 		this.thumbnail = thumbnail;
 	}
-	public Post(String title, String content, Set<Comment> comments) {
+	/*public Post(String title, String content, List<Comment> comments) {
 		this.title = title;
 		this.content = content;
 		this.comments = comments;
-	}
+	}*/
 
 	public String getCreator(){
 		return this.creator;
@@ -90,10 +88,11 @@ public class Post {
 
 	public void addComment(Comment newComment) {
 		if (comments == null) {
-			comments = new HashSet<>();
+			comments = new ArrayList<>();
 		}
+		newComment.setPost(this, this.id);
 		comments.add(newComment);
-		newComment.setPost(this);
+		//comments.add(new Comment(newComment.getContent(), this, this.id));
 	}
 
 	public void setTitle(String title) {
