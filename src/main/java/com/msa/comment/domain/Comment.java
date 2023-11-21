@@ -26,7 +26,7 @@ public class Comment {
     private long id;
 
     @Column
-    private String nickName;
+    public String nickName;
 
     @Column(name = "content")
     private String content;
@@ -37,20 +37,26 @@ public class Comment {
     private Post post;
 
     @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
+    public LocalDateTime createdAt = LocalDateTime.now();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
 
     public void setPost(Post post, Long postId) {
-        System.out.print(postId);
         this.post = post;
     }
 
-    public Comment(String content, Post post, Long postId) {
+    //이거 nickname(comment author)도 저장해야함.
+    public Comment(String content, Post post) {
         this.content = content;
         this.post = post;
+    }
+
+    public Comment(String content, Post post, String nickName) {
+        this.content = content;
+        this.post = post;
+        this.nickName = nickName;
     }
 
     public Comment() {

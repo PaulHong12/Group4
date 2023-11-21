@@ -85,7 +85,7 @@ public class PostController {
             @RequestParam(required = false) String content) {
         String commentContent = (content != null) ? content : dto.getContent();
 
-        Post updatedPost = postService.addComment(postId, String.valueOf(dto.getContent()));
+        Post updatedPost = postService.addComment(postId, String.valueOf(dto.getContent()),String.valueOf(dto.getNickName()));
         return ResponseEntity.ok(new ResultDto<>(200, "Comment added", updatedPost.convert2DTO()));
     }
 

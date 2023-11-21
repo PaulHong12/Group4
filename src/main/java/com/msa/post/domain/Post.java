@@ -28,6 +28,9 @@ public class Post {
 	@Column(name = "id")
 	public long id;
 
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> comments = new ArrayList<>();
+
 	@Column(name = "creator")
 	private String creator;
 
@@ -50,8 +53,6 @@ public class Post {
 	@LastModifiedDate
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Comment> comments = new ArrayList<>();
 
 	public Post() {
 		super();

@@ -132,14 +132,14 @@ public String home(@PathVariable String username, Model model, HttpServletReques
 
     @GetMapping({"/", "/index"})
     public String calendar(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AnonymousAuthenticationToken) {
-            // User not logged in
+    //    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    //    if (auth instanceof AnonymousAuthenticationToken) {
+        //    // User not logged in
             return "redirect:/login";
-        } else {
+     //   } else {
             // change to /{username}/home
-            return "redirect:/home";
-        }
+        //    return "redirect:/home";
+       // }
     }
 
         //특정 날짜 글 조회
@@ -150,8 +150,13 @@ public String home(@PathVariable String username, Model model, HttpServletReques
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(date, formatter);
             List<Post> posts = postService.getPostsByDateRangeAndMember(localDate, localDate, username);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String loggedInUsername = authentication.getName(); // Retrieves the username of the logged-in user
+            // Rest of your code...
+            model.addAttribute("loggedInUsername", loggedInUsername);
             model.addAttribute("posts", posts);
             model.addAttribute("date", date);
+
         } catch (Exception e) {
             // Handle parsing error or no posts found
             model.addAttribute("error", "Invalid date or no posts available.");

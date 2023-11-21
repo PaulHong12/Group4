@@ -6,6 +6,8 @@ import lombok.Getter;
 public class CommentDto {
     private long id;
     private String content;
+    @Getter
+    private String nickName;
 
     // Constructors, getters, and setters
 
@@ -18,4 +20,5 @@ public class CommentDto {
     public void setContent(String content) {
         this.content = content;
     }
+
 }

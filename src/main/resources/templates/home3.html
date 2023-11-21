@@ -38,7 +38,7 @@
       <div th:if="${postsMap.containsKey(day)}">
         <!-- Loop through posts for this day -->
         <div th:each="post : ${postsMap.get(day)}">
-          <!--Post Detail(daily_posts.html)로 보내주는 URI -->
+          <!--Post Detail(daily_posts2.html)로 보내주는 URI -->
           <a th:href="@{/home/{username}/{date}(username=${username}, date=${post.date})}" th:text="${post.title}">Post Title</a>
         </div>
       </div>

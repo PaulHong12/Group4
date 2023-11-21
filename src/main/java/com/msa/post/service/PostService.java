@@ -20,7 +20,7 @@ public interface PostService {
 
   //  Post updatePost(String title, String content);
 
-	Post addComment(long i, String content);
+	//Post addComment(long i, String content);
 
     List<Post> getPostsByDate(LocalDate parsedDate);
 
@@ -33,4 +33,6 @@ public interface PostService {
 	List<Post> getPostsByDateRangeAndMember(LocalDate start, LocalDate end, String username);
 
 	Optional<Post> findById(Long postId);
+
+	Post addComment(long postId, String s, String s1);
 }

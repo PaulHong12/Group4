@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Transactional
-	public Post addComment(long postId, String content) {
+	public Post addComment(long postId, String content, String nickName) {
 		//Optional<Post> postOptional = postRepository.findById(postId);
 		//if (postOptional.isPresent()) {
 			//Post post = postOptional.get();
@@ -62,8 +62,7 @@ public class PostServiceImpl implements PostService {
 			//이게 문제인듯. findByCreatorAndDateBetween()사용해보기..
 			Post post = postRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("Post not found"));
 
-			Comment newComment = new Comment(content, post, postId);
-			System.out.print(postId);
+			Comment newComment = new Comment(content, post, nickName);
 			newComment.setPost(post, postId);
 			commentRepository.save(newComment);// This should save both post and comment due to CascadeType.ALL
 		//} else {tId
