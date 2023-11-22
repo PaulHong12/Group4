@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sign Up</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#signup_btn').click(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                console.log("signup clicked!!!");
+
+                var username = $('#username').val();
+                var email = $('#email').val();
+                var password = $('#password').val();
+                var confirmPassword = $('#confirm-password').val();
+
+                // Add validation here (e.g., check if passwords match)
+
+                var param = {
+                    username: username,
+                    email: email,
+                    password: password,
+                };
+
+                $.ajax({
+                    url: "/members/auth/signUp",
+                    method: "POST",
+                    contentType: 'application/json',
+                    data: JSON.stringify(param)
+                }).then(function(data) {
+                    console.log("Success:", data);
+                    alert("회원 가입이 되었습니다.");
+                    window.location.href = '/{username}/home';
+                }, function(err) {
+                    console.error("Error:", err);
+                    alert("Error during sign up.");
+                    window.location.reload();
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<form>
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" />
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" />
+    </div>
+    <div>
+        <label for="confirm-password">Confirm Password:</label>
+        <input type="password" id="confirm-password" name="confirmPassword" />
+    </div>
+    <div>
+        <button type="submit" id="signup_btn">Sign Up</button>
+    </div>
+</form>
+</body>
+</html>

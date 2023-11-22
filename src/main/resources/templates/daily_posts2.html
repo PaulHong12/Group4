@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Today's Post</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .comment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .comment-nickname {
+            /* Add styles for nickname */
+        }
+        .comment-created-at {
+            /* Add styles for created at */
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+$(document).on('click', '.saveEditedComment', function(event) {
+    event.preventDefault();
+    var commentId = $(this).siblings('input[name="commentId"]').val();
+    var formData = {
+        content: $('#commentInput2').val()
+    };
+    $.ajax({
+        url: '/comments/' + commentId,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function(response) {
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error adding post:', xhr.responseText);
+                    }
+    });
+});
+ $('#addComment').click(function(event) {
+                event.preventDefault();
+                //댓글 쓴사람 넘겨주기.
+                var postId = $("#postId").val();
+                var creator = $("#creator").val();
+                var date = $("#date").val();
+                var nickName = $("#loggedInUsername").val();
+                var formData = {
+                    content: $('#commentInput').val(),
+                    nickName: nickName
+                };
+                $.ajax({
+                    url: '/posts/' + postId + '/comments',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/home/' + creator + '/' + date;
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error adding post:', xhr.responseText);
+                    }
+                });
+            });
+$('#editPostBtn').click(function(event) {
+    event.preventDefault();
+    var postId = $(this).siblings(".postId").val(); // Get the postId
+
+    $.ajax({
+        url: '/editPost/' + postId, // Ensure the slash is correctly placed
+        type: 'GET',
+        success: function(response) {
+            window.location.href = '/editPost/' + postId; // Correct redirection URL
+        },
+        error: function(xhr, status, error) {
+            console.error('Error sending GET request:', error);
+        }
+    });
+});
+$('#deleteComment').click(function(event) {
+    var commentId = $(this).siblings('input[name="commentId"]').val();
+    $.ajax({
+        url: '/comments/' + commentId,
+        type: 'DELETE',
+        success: function(response) {
+            console.log('Comment deleted successfully');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error deleting comment:', error);
+        }
+    });
+}
+        });
+    </script>
+</head>
+<body>
+<h1>Posts for <span th:text="${date}"></span></h1>
+<div th:each="post : ${posts}">
+    <!-- 글 수정, 삭제 요청 Ajax로 postId 포함해서 postService로 알맞게 보내기.-->
+    <div>
+        <h2 th:text="${post.title}">Post Title</h2>
+        <p th:text="${post.content}">Post content</p>
+    </div>
+    <button type="button" id="editPostBtn">Edit Post</button>
+    <input type="hidden" class="postId" th:value="${post.id}"/>
+    <!-- 댓글 쓴 사람=현재 로그인된 사람 정보 받아서 nickname으로 지정해주고, nickname 추가해서 comment save 하기.
+    comment의 createdAt을 form에서 가져와서 보여주기-->
+    <form id="commentForm" method="post">
+        <textarea id="commentInput" name="content" placeholder=""></textarea>
+        <input type="hidden" id="postId" th:value="${post.id}"/>
+        <input type="hidden" id="creator" th:value="${post.creator}"/>
+        <input type="hidden" id="date" th:value="${post.date}"/>
+        <input type="hidden" id="loggedInUsername" th:value="${loggedInUsername}"/>
+        <button type="submit" id="addComment">Add Comment</button>
+    </form>
+
+    <!-- Display Comments comment의 createdAt, nickname, profile pic을 form에서 가져와서 보여주기-->
+    <div th:each="comment : ${post.comments}">
+        <span class="comment-nickname" th:text="${comment.nickName}">Nickname</span>
+        <span class="comment-content" th:text="${comment.content}">Comment content</span>
+        <span class="comment-created-at" th:text="${comment.createdAt}">Created At</span>
+        <!-- 댓글 수정, 삭제 요청 Ajax로 commentId 포함해서 commentService -> commentRepository로 알맞게 보내기.-->
+        <!-- Edit Comment CommentService에서 구현하기./ 따로 form 만들어서 누르면 form 이 위치에 나오도록 하기.-->
+        <button data-commentid="${comment.id}" class="editComment">Edit</button>
+
+        <!-- Delete Comment Button 이거 요청 ajax 사용해서 똑바로 보내기.-->
+        <form class="delete-comment-form">
+            <input type="hidden" name="commentId" th:value="${comment.id}"/>
+            <button type="button" id="deleteComment">Delete</button>
+        </form>
+
+    </div>
+</div>
+</body>

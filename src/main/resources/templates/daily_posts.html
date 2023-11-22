@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Today's Post</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+  $('#addComment').click(function(event) {
+                event.preventDefault();
+                //댓글 쓴사람 넘겨주기.
+                var postId = $("#postId").val();
+                var creator = $("#creator").val();
+                var date = $("#date").val();
+                var nickName = $("#loggedInUsername").val();
+                var formData = {
+                    content: $('#commentInput').val(),
+                    nickName: nickName
+                };
+                $.ajax({
+                    url: '/posts/' + postId + '/comments',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/home/' + creator + '/' + date;
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Error adding post:', xhr.responseText);
+                    }
+                });
+            });
+$('#editPostBtn').click(function(event) {
+    event.preventDefault();
+    var postId = $(this).siblings(".postId").val(); // Get the postId
+
+    $.ajax({
+        url: '/editPost/' + postId, // Ensure the slash is correctly placed
+        type: 'GET',
+        success: function(response) {
+            window.location.href = '/editPost/' + postId; // Correct redirection URL
+        },
+        error: function(xhr, status, error) {
+            console.error('Error sending GET request:', error);
+        }
+    });
+});
+$('#deleteComment').click(function(event) {
+    var commentId = $("#commentId").val();
+    $.ajax({
+        url: '/comments/' + commentId,
+        type: 'DELETE',
+        success: function(response) {
+            console.log('Comment deleted successfully');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error deleting comment:', error);
+        }
+    });
+});
+
+        });
+    </script>
+</head>
+<body>
+<h1>Posts for <span th:text="${date}"></span></h1>
+<div th:each="post : ${posts}">
+    <!-- 글 수정, 삭제 요청 Ajax로 postId 포함해서 postService로 알맞게 보내기.-->
+    <div>
+        <h2 th:text="${post.title}">Post Title</h2>
+        <p th:text="${post.content}">Post content</p>
+    </div>
+    <button type="button" id="editPostBtn">Edit Post</button>
+    <input type="hidden" class="postId" th:value="${post.id}"/>
+    <!-- add Comment -->
+    <form id="commentForm" method="post">
+        <textarea id="commentInput" name="content" placeholder=""></textarea>
+        <input type="hidden" id ="postId" th:value="${post.id}"/>
+        <input type="hidden" id ="creator" th:value="${post.creator}"/>
+        <input type="hidden" id ="date" th:value="${post.date}"/>
+        <input type="hidden" id="loggedInUsername" th:value="${loggedInUsername}"/>
+        <button type="button" id="addComment">Add Comment</button>
+    </form>
+
+    <!-- Display Comments -->
+    <div th:each="comment : ${post.comments}">
+        <span class="comment-nickname" th:text="${comment.nickName}">Nickname</span>
+        <span class="comment-content" th:text="${comment.content}">Comment content</span>
+        <span class="comment-created-at" th:text="${comment.createdAt}">Created At</span>
+        <!-- 댓글 수정, 삭제 요청 Ajax로 commentId 포함해서 commentService -> commentRepository로 알맞게 보내기.-->
+        <!-- Edit Comment Button -->
+        <!-- Delete Comment-->
+    </div>
+</div>
+</body>
