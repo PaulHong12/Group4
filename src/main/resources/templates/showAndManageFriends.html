@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>친구 목록</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+// Add click event for each "Add Friend" button
+$('.deleteFriendBtn').click(function() {
+    var username = $(this).data('member-id');
+    $.ajax({
+        url: '/members/deleteFriend/' + username, // 이거 메소드 만들기
+        type: 'DELETE',
+        success: function(response) {
+            alert('Friend request sent!');
+        },
+        error: function() {
+            alert('Error sending friend request.');
+        }
+    });
+});
+});
+  </script>
+</head>
+<body>
+<h1>친구목록</h1>
+<div id="membersList">
+  <div th:each="member : ${members}">
+    <span th:text="${member.username}">Username</span>
+    <button class="deleteFriendBtn" th:data-member-id="${member.username}">Add Friend</button>
+  </div>
+</div>
+</body>
+</html>

@@ -29,7 +29,7 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue
     @Type(type="org.hibernate.type.UUIDCharType") // This line is optional, Hibernate usually detects the type automatically.
-    private UUID id;
+    public UUID id;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;

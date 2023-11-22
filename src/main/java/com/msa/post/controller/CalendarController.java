@@ -183,10 +183,32 @@ public String home(@PathVariable String username, Model model, HttpServletReques
 
     @GetMapping("/recommendedFriends")
     public String showRecommendedFriends(Model model) {
-        //Get loggedinUser
-        //make a List<Member> members who are not friends with the logged in user
-        //add the list to model.
-        return ""; // This should be the name of the Thymeleaf template that contains the form
+        // Get the logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        // Assuming a method getNonFriendsMembers that returns a list of members who are not friends with the given username
+        List<Member> nonFriendMembers = memberService.getNonFriendsMembers(currentUsername);
+
+        // Add the list to the model
+        model.addAttribute("members", nonFriendMembers);
+
+        return "recommendedFriends"; // The name of your Thymeleaf template
+    }
+
+    @GetMapping("/showAndManageFriends")
+    public String showAndManageFriends(Model model) {
+        // Get the logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        // Assuming a method getNonFriendsMembers that returns a list of members who are not friends with the given username
+        List<Member> nonFriendMembers = memberService.getFriendList(currentUsername);
+
+        // Add the list to the model
+        model.addAttribute("members", nonFriendMembers);
+
+        return "showAndManageFriends"; // The name of your Thymeleaf template
     }
 
 }

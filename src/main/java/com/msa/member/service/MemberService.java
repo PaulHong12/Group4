@@ -18,9 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -100,5 +102,28 @@ public class MemberService {
 
     public Optional<Member> findByEmail(String username) {
         return memberRepository.findByEmail(username);
+    }
+
+    public List<Member> getNonFriendsMembers(String currentUsername) {
+        // Fetch the current user
+        Member currentUser = memberRepository.findByUsername(currentUsername);
+
+        // Fetch all members
+        List<Member> allMembers = memberRepository.findAll();
+
+        // Filter out the current user and their friends
+        return allMembers.stream()
+                .filter(member -> !member.equals(currentUser) && !currentUser.getFriends().contains(member))
+                .collect(Collectors.toList());
+    }
+
+    public List<Member> getFriendList(String currentUsername) {
+        // Fetch the current user
+        Member currentUser = memberRepository.findByUsername(currentUsername);
+
+        // Check for mutual friendship
+        return currentUser.getFriends().stream()
+                .filter(friend -> friend.getFriends().contains(currentUser))
+                .collect(Collectors.toList());
     }
 }
