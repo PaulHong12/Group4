@@ -77,45 +77,43 @@ textarea, input[type='text'] {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-  $('#addComment').click(function(event) {
-                event.preventDefault();
-                //댓글 쓴사람 넘겨주기.
-                var postId = $("#postId").val();
-                var creator = $("#creator").val();
-                var date = $("#date").val();
-                var nickName = $("#loggedInUsername").val();
-                var formData = {
-                    content: $('#commentInput').val(),
-                    nickName: nickName
-                };
-                $.ajax({
-                    url: '/posts/' + postId + '/comments',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
-                    success: function(response) {
-                        window.location.href = '/home/' + creator + '/' + date;
-                    },
-                    error: function(xhr, status, error) {
-                        console.log('Error adding post:', xhr.responseText);
-                    }
-                });
-            });
-$('#editPostBtn').click(function(event) {
-    event.preventDefault();
-    var postId = $(this).siblings(".postId").val(); // Get the postId
-
-    $.ajax({
-        url: '/editPost/' + postId, // Ensure the slash is correctly placed
-        type: 'GET',
-        success: function(response) {
-            window.location.href = '/editPost/' + postId; // Correct redirection URL
-        },
-        error: function(xhr, status, error) {
-            console.error('Error sending GET request:', error);
-        }
+    $(document).on('click', '.addCommentBtn', function() {
+        var form = $(this).closest('.commentForm');
+        var postId = $("#postId").val();
+        var creator = $("#creator").val();
+        var date = $("#date").val();
+        var nickName = $("#loggedInUsername").val();
+        var content= $(this).siblings(".commentInput").val();
+        var formData = {
+            content: content,
+            nickName: nickName
+        };
+        $.ajax({
+            url: '/posts/' + postId + '/comments',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                window.location.href = '/home/' + creator + '/' + date;
+            },
+            error: function(xhr, status, error) {
+                console.error('Error adding post:', xhr.responseText);
+            }
+        });
     });
-});
+  $(document).on('click', '.editPostBtn', function() {
+        var postId = $(this).siblings(".postId").val();
+        $.ajax({
+            url: '/editPost/' + postId,
+            type: 'GET',
+            success: function(response) {
+                window.location.href = '/editPost/' + postId;
+            },
+            error: function(xhr, status, error) {
+                console.error('Error sending GET request:', error);
+            }
+        });
+    });
 $('.deleteCommentBtn').click(function(event) {
     var commentId = $(this).siblings(".commentId").val();
     var creator = $("#creator").val();
@@ -178,16 +176,16 @@ $('.editCommentSubmit').click(function(event) {
         <h2 th:text="${post.title}">Post Title</h2>
         <p th:text="${post.content}">Post content</p>
     </div>
-    <button type="button" id="editPostBtn">Edit Post</button>
+    <button type="button" class="editPostBtn">Edit Post</button>
     <input type="hidden" class="postId" th:value="${post.id}"/>
     <!-- add Comment -->
     <form id="commentForm" method="post">
-        <textarea id="commentInput" name="content" placeholder=""></textarea>
+        <textarea id="commentInput" class="commentInput" name="content" placeholder=""></textarea>
         <input type="hidden" id ="postId" th:value="${post.id}"/>
         <input type="hidden" id ="creator" th:value="${post.creator}"/>
         <input type="hidden" id ="date" th:value="${post.date}"/>
         <input type="hidden" id="loggedInUsername" th:value="${loggedInUsername}"/>
-        <button type="button" id="addComment">Add Comment</button>
+        <button type="button" class="addCommentBtn">Add Comment</button>
     </form>
 
     <!-- Display Comments -->
@@ -201,7 +199,7 @@ $('.editCommentSubmit').click(function(event) {
 
         <!-- Edit Comment Form -->
         <form class="editCommentForm" style="display: none;" method="post">
-            <textarea class="editCommentInput" name="content" placeholder=""></textarea>
+            <textarea id = "editCommentInput" class="editCommentInput" name="content" placeholder=""></textarea>
             <input type="hidden" class="postId" th:value="${post.id}"/>
             <input type="hidden" class="commentId" th:value="${comment.id}"/>
             <button type="button" class="editCommentSubmit">Submit Edit</button>
