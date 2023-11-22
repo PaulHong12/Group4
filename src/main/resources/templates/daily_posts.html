@@ -2,6 +2,78 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Today's Post</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #F0F2F5;
+    color: #1C1E21;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, p {
+    margin: 10px;
+}
+
+/* Post and comment styling */
+div {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 15px;
+}
+
+/* Button styling */
+button {
+    background-color: #1877F2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #165EAB;
+}
+
+/* Form and input styling */
+form {
+    margin-top: 10px;
+}
+
+textarea, input[type='text'] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+/* Specific styling for comments */
+.comment-content, .comment-nickname, .comment-created-at {
+    display: block; /* Makes span behave like a block element */
+    margin-bottom: 5px;
+}
+
+.editCommentForm {
+    margin-top: 10px;
+    background-color: #E4E6EB;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    textarea, input[type='text'] {
+        width: 100%;
+    }
+}
+    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -44,16 +116,53 @@ $('#editPostBtn').click(function(event) {
         }
     });
 });
-$('#deleteComment').click(function(event) {
-    var commentId = $("#commentId").val();
+$('.deleteCommentBtn').click(function(event) {
+    var commentId = $(this).siblings(".commentId").val();
+    var creator = $("#creator").val();
+     var date = $("#date").val();
     $.ajax({
         url: '/comments/' + commentId,
         type: 'DELETE',
         success: function(response) {
+            // Remove the comment element from the page
+            $(this).parent().remove();
+            window.location.href = '/home/' + creator + '/' + date; // Correct redirection URL
             console.log('Comment deleted successfully');
         },
         error: function(xhr, status, error) {
             console.error('Error deleting comment:', error);
+        }
+    });
+});
+$('.editCommentForm').hide();
+$('.editCommentBtn').click(function(event) {
+    event.preventDefault();
+    var postId = $(this).siblings(".postId").val();
+    var commentId = $(this).siblings(".commentId").val();
+
+    // Show the edit comment form for this comment
+    $(this).siblings(".editCommentForm").show();
+});
+
+$('.editCommentSubmit').click(function(event) {
+    event.preventDefault();
+    var postId = $(this).siblings(".postId").val();
+    var commentId = $(this).siblings(".commentId").val();
+    var newContent = $(this).siblings(".editCommentInput").val();
+    var creator = $("#creator").val();
+    var date = $("#date").val();
+
+    // Make an AJAX request to update the comment content
+    $.ajax({
+        url: '/comments/' + commentId,
+        type: 'PUT', // Use PUT method to update the comment
+        contentType: 'application/json',
+        data: JSON.stringify({ content: newContent }),
+        success: function(response) {
+            window.location.href = '/home/' + creator + '/' + date; // Correct redirection URL
+        },
+        error: function(xhr, status, error) {
+            console.error('Error updating comment:', error);
         }
     });
 });
@@ -88,7 +197,18 @@ $('#deleteComment').click(function(event) {
         <span class="comment-created-at" th:text="${comment.createdAt}">Created At</span>
         <!-- 댓글 수정, 삭제 요청 Ajax로 commentId 포함해서 commentService -> commentRepository로 알맞게 보내기.-->
         <!-- Edit Comment Button -->
+        <button type="button" class="editCommentBtn">Edit Comment</button>
+
+        <!-- Edit Comment Form -->
+        <form class="editCommentForm" style="display: none;" method="post">
+            <textarea class="editCommentInput" name="content" placeholder=""></textarea>
+            <input type="hidden" class="postId" th:value="${post.id}"/>
+            <input type="hidden" class="commentId" th:value="${comment.id}"/>
+            <button type="button" class="editCommentSubmit">Submit Edit</button>
+        </form>
         <!-- Delete Comment-->
+        <button type="button" class="deleteCommentBtn">Delete Comment</button>
+        <input type="hidden" class="commentId" th:value="${comment.id}"/>
     </div>
 </div>
 </body>

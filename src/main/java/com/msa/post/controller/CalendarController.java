@@ -181,5 +181,12 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         return "editPost";
     }
 
+    @GetMapping("/recommendedFriends")
+    public String showRecommendedFriends(Model model) {
+        //Get loggedinUser
+        //make a List<Member> members who are not friends with the logged in user
+        //add the list to model.
+        return ""; // This should be the name of the Thymeleaf template that contains the form
+    }
 
 }
