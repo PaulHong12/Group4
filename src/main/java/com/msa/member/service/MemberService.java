@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -134,7 +131,13 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public Set<Member> findReceivedFriendRequests(Member currentUser) {
-        return memberRepository.findReceivedFriendRequests(currentUser);
+    public Set<Member> findReceivedFriendRequests(String username) {
+        Member currentUser = memberRepository.findByUsername(username);
+        if (currentUser != null) {
+            return currentUser.getReceivedFriendRequests();
+        } else {
+            // Handle the case where the user does not exist or is not found
+            return Collections.emptySet();
+        }
     }
 }

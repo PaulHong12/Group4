@@ -103,10 +103,11 @@ public String home(@PathVariable String username, Model model, HttpServletReques
     Member loggedInUser = memberService.getLoggedInUser(request); // Implement this method to identify the logged-in user
     boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
 
+    //이부분 조금만 수정! 중요
     if (!profileUser.getUsername().equals(loggedInUser.getUsername()) || !isFriend) {
         // Redirect if not the owner or a friend
-        String loggedInUsername = loggedInUser.getUsername();
-        return "redirect:/" + loggedInUsername + "/home";
+        //String loggedInUsername = loggedInUser.getUsername();
+        return "redirect:/" + loggedInUser.getEmail() + "/home";
     }
 
     // Initialize days array
@@ -192,7 +193,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
 
         // Add the list to the model
         model.addAttribute("members", nonFriendMembers);
-
+        model.addAttribute("currentUsername", currentUsername);
         return "recommendedFriends"; // The name of your Thymeleaf template
     }
 
@@ -216,10 +217,10 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
         Member currentUser = memberService.findByUsername(currentUsername);
-
-        Set<Member> friendRequests = memberService.findReceivedFriendRequests(currentUser);
-
-        model.addAttribute("friendRequests", friendRequests);
+        Set<Member> friendRequests = memberService.findReceivedFriendRequests(currentUsername);
+        if(!friendRequests.isEmpty())
+            model.addAttribute("friendRequests", friendRequests);
+        model.addAttribute("currentUsername", currentUsername);
         return "friend_requests"; // Name of the Thymeleaf template
     }
 

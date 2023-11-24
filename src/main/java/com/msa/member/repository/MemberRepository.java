@@ -15,6 +15,5 @@ public interface MemberRepository extends JpaRepository<Member, UUID> {
     Optional<Member> findByEmail(String email);
 
     Member findByUsername(String username);
-    @Query("SELECT m FROM Member m JOIN m.friends f WHERE f = :currentUser AND m NOT IN (SELECT f2 FROM Member f2 JOIN f2.friends m2 WHERE m2 = :currentUser)")
-    Set<Member> findReceivedFriendRequests(@Param("currentUser") Member currentUser);
+
 }

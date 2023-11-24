@@ -7,9 +7,9 @@
     $(document).ready(function() {
 // Add click event for each "Add Friend" button
 $('.deleteFriendBtn').click(function() {
-    var username = $(this).data('member-id');
+    var memberId = $(this).data('member-id');
     $.ajax({
-        url: '/members/deleteFriend/' + username, // 이거 메소드 만들기
+        url: '/members/deleteFriend/' + memberId, // 이거 메소드 만들기
         type: 'DELETE',
         success: function(response) {
             alert('Friend request sent!');

@@ -5,21 +5,27 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-    // Add click event for each "Add Friend" button
-    $('.addFriendBtn').click(function() {
-        var username = $(this).data('member-id');
-        $.ajax({
-            url: '/members/addFriend/' + username, // 이거 메소드 만들기 그냥 id로 받을지 생각하기.?
-            type: 'POST',
-            success: function(response) {
-                alert('Friend request sent!');
-            },
-            error: function() {
-                alert('Error sending friend request.');
-            }
+            $(document).on('click', '.addFriendBtn', function() {
+                var username = $(this).siblings(".username").val();
+                var friendName = $(this).siblings(".friendName").val();
+                var formData = {
+                    username: username,
+                    friendName: friendName
+                };
+                $.ajax({
+                    url: '/members/addFriend',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/recommendedFriends';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error adding post:', xhr.responseText);
+                    }
+                });
+            });
         });
-    });
-});
     </script>
 </head>
 <body>
@@ -27,7 +33,9 @@
 <div id="membersList">
     <div th:each="member : ${members}">
         <span th:text="${member.username}">Username</span>
-        <button class="addFriendBtn" th:data-member-id="${member.username}">Add Friend</button>
+        <button type="button" class="addFriendBtn">Add Friend</button>
+        <input type="hidden" class="friendName" th:value="${member.username}" />
+        <input type="hidden" class="username" th:value="${currentUsername}" />
     </div>
 </div>
 </body>

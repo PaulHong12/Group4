@@ -6,6 +6,7 @@ import com.msa.member.dto.LoginDto;
 import com.msa.member.dto.SignupDto;
 import com.msa.member.dto.UserDto;
 import com.msa.member.service.MemberService;
+import com.msa.post.dto.FriendDto;
 import com.msa.post.dto.ResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -79,11 +80,13 @@ public class MemberController {
                 .body(new ResultDto<>(200, "Logged out successfully", ""));
     }
 
-    @PostMapping("/{memberId}/addFriend/{friendId}")
-    public ResponseEntity<?> addFriend(@PathVariable String username, @PathVariable String friendUsername) {
+    //username이나 dto로바꾸기?
+    @PostMapping("/addFriend")
+   // public ResponseEntity<?> addFriend(@PathVariable String username, @PathVariable String friendUsername) {
+    public ResponseEntity<?> addFriend(@RequestBody FriendDto friendDto) {
         try {
-            Member member = memberService.findByUsername(username);
-            Member friend = memberService.findByUsername(friendUsername);
+            Member member = memberService.findByUsername(friendDto.getUsername());
+            Member friend = memberService.findByUsername(friendDto.getFriendName());
 
             if (member == null || friend == null) {
                 return ResponseEntity.notFound().build();
@@ -95,6 +98,24 @@ public class MemberController {
             return ResponseEntity.ok().body("Friend added successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding friend");
+        }
+    }
+    @PostMapping("/acceptFriend")
+    public ResponseEntity<?> acceptFriend(@RequestBody FriendDto friendDto) {
+        try {
+            //여기서 currentUser가 null임 고치기.
+            Member currentUser = memberService.findByUsername(friendDto.getUsername());
+            Member friend = memberService.findByUsername(friendDto.getFriendName());
+
+            if (currentUser == null || friend == null) {
+                return ResponseEntity.notFound().build();
+            }
+            currentUser.acceptFriendRequest(friend);
+            memberService.save(currentUser);
+
+            return ResponseEntity.ok().body("Friend request accepted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting friend request");
         }
     }
 

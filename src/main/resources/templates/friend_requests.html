@@ -1,15 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>받은 친구 요청</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on('click', '.addFriendBtn', function() {
+                var username = $(this).siblings(".username").val();
+                var friendName = $(this).siblings(".friendName").val();
+                var formData = {
+                    username: username,
+                    friendName: friendName
+                };
+                $.ajax({
+                    url: '/members/acceptFriend',  //acceptFriend로 바꾸기!
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        window.location.href = '/receivedFriendRequests';
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error adding post:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <ul>
     <li th:each="member : ${friendRequests}">
         <span th:text="${member.username}">Username</span>
-        <!-- Add more member details here -->
+        <button type="button" class="addFriendBtn">Accept Request</button>
+        <input type="hidden" class="friendName" th:value="${member.username}" />
+        <input type="hidden" class="username" th:value="${currentUsername}" />
     </li>
 </ul>
 </body>
-</html>

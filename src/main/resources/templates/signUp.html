@@ -30,7 +30,7 @@
                 }).then(function(data) {
                     console.log("Success:", data);
                     alert("회원 가입이 되었습니다.");
-                    window.location.href = '/{username}/home';
+                    window.location.href = '/'+ email+ '/home';
                 }, function(err) {
                     console.error("Error:", err);
                     alert("Error during sign up.");

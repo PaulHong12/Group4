@@ -63,6 +63,15 @@ public class Member implements UserDetails {
     )
     private Set<Member> friends = new HashSet<>();
 
+    @Getter
+    @ManyToMany
+    @JoinTable(
+            name = "member_friend_requests",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_requester_id")
+    )
+    private Set<Member> receivedFriendRequests = new HashSet<>();
+
     // 양방향 관계., 누구의 친구인지 알수있음.
     @Getter
     @ManyToMany(mappedBy = "friends")
@@ -129,16 +138,34 @@ public class Member implements UserDetails {
         this.friends = friends;
     }
 
-    public void addFriend(Member friend) {
-        //일단 한 방향으로만 친구추가 하기.
-        this.friends.add(friend);
-        //friend.getFriendOf().add(this); // Add this member to the friend's list of 'friendOf'
+    // Method to handle receiving a friend request
+    public void receiveFriendRequest(Member member) {
+        this.receivedFriendRequests.add(member);
     }
 
-    //친구삭제는 이거 부르면 될듯.
+    // Method to handle accepting a friend request
+    public void acceptFriendRequest(Member member) {
+        if (receivedFriendRequests.contains(member)) {
+            friends.add(member);
+            member.getFriends().add(this); // Mutual friendship
+            receivedFriendRequests.remove(member);
+        }
+    }
+
+    // Method to handle declining a friend request
+    public void declineFriendRequest(Member member) {
+        receivedFriendRequests.remove(member);
+    }
+
+    // Existing addFriend method updated to send a friend request
+    public void addFriend(Member friend) {
+        friend.receiveFriendRequest(this);
+    }
+
+    // Updated removeFriend method
     public void removeFriend(Member friend) {
         this.friends.remove(friend);
-        friend.getFriendOf().remove(this); // Remove this member from the friend's list of 'friendOf'
+        friend.getFriends().remove(this); // Remove from both sides
     }
 
     public void setFriendOf(Set<Member> friendOf) {
