@@ -8,16 +8,14 @@ import com.msa.member.dto.UserDto;
 import com.msa.member.service.MemberService;
 import com.msa.post.dto.ResultDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -81,5 +79,23 @@ public class MemberController {
                 .body(new ResultDto<>(200, "Logged out successfully", ""));
     }
 
+    @PostMapping("/{memberId}/addFriend/{friendId}")
+    public ResponseEntity<?> addFriend(@PathVariable String username, @PathVariable String friendUsername) {
+        try {
+            Member member = memberService.findByUsername(username);
+            Member friend = memberService.findByUsername(friendUsername);
+
+            if (member == null || friend == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            member.addFriend(friend);
+            memberService.save(member); // Assuming save method will also update the member
+
+            return ResponseEntity.ok().body("Friend added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding friend");
+        }
+    }
 
 }

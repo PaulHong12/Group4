@@ -53,6 +53,7 @@ public class Member implements UserDetails {
     @Builder.Default
     private Set<String> roles = new HashSet<>();
 
+
     @Getter
     @ManyToMany
     @JoinTable(
@@ -129,10 +130,12 @@ public class Member implements UserDetails {
     }
 
     public void addFriend(Member friend) {
+        //일단 한 방향으로만 친구추가 하기.
         this.friends.add(friend);
-        friend.getFriendOf().add(this); // Add this member to the friend's list of 'friendOf'
+        //friend.getFriendOf().add(this); // Add this member to the friend's list of 'friendOf'
     }
 
+    //친구삭제는 이거 부르면 될듯.
     public void removeFriend(Member friend) {
         this.friends.remove(friend);
         friend.getFriendOf().remove(this); // Remove this member from the friend's list of 'friendOf'

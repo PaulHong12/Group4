@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.ui.Model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +47,7 @@ public class CalendarController {
             //뒤에-user이 붙음..
             currentUsername = authentication.getName(); // Gets the username of the currently logged-in user
         }
-
+        currentUsername = memberService.findByUsername(currentUsername).getEmail();
         PostDto postDto =  new PostDto("제목", "내용", currentUsername);
         postDto.setUsername(currentUsername); // Set the username in PostDto
 
@@ -101,7 +99,7 @@ public class CalendarController {
 public String home(@PathVariable String username, Model model, HttpServletRequest request) {
     // 날짜별로 글 리스트 저장하는 HashMap
     Map<LocalDate, List<Post>> postsMap = new HashMap<>();
-    Member profileUser = memberService.findByUsername(username);
+    Member profileUser = memberService.findByEmail(username).get();
     Member loggedInUser = memberService.getLoggedInUser(request); // Implement this method to identify the logged-in user
     boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
 
@@ -152,8 +150,10 @@ public String home(@PathVariable String username, Model model, HttpServletReques
             List<Post> posts = postService.getPostsByDateRangeAndMember(localDate, localDate, username);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String loggedInUsername = authentication.getName(); // Retrieves the username of the logged-in user
+            String loggedInUserEmail = memberService.findByUsername(loggedInUsername).getEmail();
             // Rest of your code...
-            model.addAttribute("loggedInUsername", loggedInUsername);
+            model.addAttribute("loggedInUsername", loggedInUserEmail);
+            //model.addAttribute("loggedInUsername", loggedInUsername);
             model.addAttribute("posts", posts);
             model.addAttribute("date", date);
 
@@ -173,7 +173,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
             //뒤에-user이 붙음..
             currentUsername = authentication.getName(); // Gets the username of the currently logged-in user
         }
-
+        currentUsername = memberService.findByUsername(currentUsername).getEmail();
         PostDto postDto =  new PostDto("제목", "내용", currentUsername, postId);
         postDto.setUsername(currentUsername); // Set the username in PostDto
 
@@ -209,6 +209,18 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         model.addAttribute("members", nonFriendMembers);
 
         return "showAndManageFriends"; // The name of your Thymeleaf template
+    }
+
+    @GetMapping("/receivedFriendRequests")
+    public String showReceivedFriendRequests(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+        Member currentUser = memberService.findByUsername(currentUsername);
+
+        Set<Member> friendRequests = memberService.findReceivedFriendRequests(currentUser);
+
+        model.addAttribute("friendRequests", friendRequests);
+        return "friend_requests"; // Name of the Thymeleaf template
     }
 
 }

@@ -107,7 +107,7 @@ textarea, input[type='text'] {
             url: '/editPost/' + postId,
             type: 'GET',
             success: function(response) {
-                window.location.href = '/editPost/' + postId;
+                  window.location.href = '/editPost/' + postId;
             },
             error: function(xhr, status, error) {
                 console.error('Error sending GET request:', error);

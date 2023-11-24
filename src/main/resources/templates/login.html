@@ -16,11 +16,11 @@
                     return;
                 }
 
-                var name = username.split("@")[0];
+                //var name = username.split("@")[0];
 
                 var param = {
                     email: username,
-                    password: password
+                    password: password,
                 };
 
                 $.ajax({
@@ -30,7 +30,7 @@
                     contentType: 'application/json',
                     data: JSON.stringify(param)
                 }).then(function(data) {
-                    window.location.href = '/' + name + '/home';
+                    window.location.href = '/' + username + '/home';
                 }, function(err) {
                     alert("계정 정보를 확인해주세요.");
                     window.location.reload();
@@ -46,7 +46,7 @@
 <body>
 <form>
     <div>
-        <label for="username">Username:</label>
+        <label for="username">Email:</label>
         <input type="text" id="username" name="username" />
     </div>
     <div>
@@ -55,6 +55,8 @@
     </div>
     <div>
         <button type="button" id="login">Login</button>
+    </div>
+    <div>
         <button type="button" id="signUp">Sign up</button>
     </div>
 

@@ -7,7 +7,6 @@ import com.msa.member.domain.RefreshToken;
 import com.msa.member.repository.MemberRepository;
 import com.msa.member.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -50,7 +49,6 @@ public class MemberService {
 
         Authentication authentication = authenticationManagerBuilder
                 .getObject().authenticate(authenticationToken);
-
         Optional<Member> member = memberRepository.findByEmail(email);
 
        // if (member.isEmpty()) {
@@ -123,7 +121,20 @@ public class MemberService {
 
         // Check for mutual friendship
         return currentUser.getFriends().stream()
-                .filter(friend -> friend.getFriends().contains(currentUser))
+                .filter(friend -> friend.getFriends().contains(currentUser) && currentUser.getFriends().contains(friend))
                 .collect(Collectors.toList());
+    }
+
+
+    public Optional<Member> findById(UUID memberId) {
+        return memberRepository.findById(memberId);
+    }
+
+    public void save(Member member) {
+        memberRepository.save(member);
+    }
+
+    public Set<Member> findReceivedFriendRequests(Member currentUser) {
+        return memberRepository.findReceivedFriendRequests(currentUser);
     }
 }

@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import com.msa.comment.dto.CommentDto;
+import com.msa.member.domain.Member;
+import com.msa.member.service.MemberService;
 import com.msa.post.domain.Post;
 import com.msa.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class PostController {
 
     private final PostService postService;
+    private final MemberService memberService;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     /*
     @GetMapping("/{username}/{date}")
@@ -64,6 +67,7 @@ public class PostController {
             @RequestBody PostDto dto,
             Authentication authentication) { // Include Authentication object
         String currentUsername = authentication.getName();
+        currentUsername = memberService.findByUsername(currentUsername).getEmail();
         Post post = postService.findById(postId).get();
 
         if (post.getCreator().equals(currentUsername)) {
