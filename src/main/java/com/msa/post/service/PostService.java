@@ -35,4 +35,6 @@ public interface PostService {
 	Optional<Post> findById(Long postId);
 
 	Post addComment(long postId, String s, String s1);
+
+    Post getPostById(long postId);
 }

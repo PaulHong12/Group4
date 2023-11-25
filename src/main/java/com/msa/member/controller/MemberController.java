@@ -118,5 +118,22 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting friend request");
         }
     }
+    @PostMapping("/deleteFriend")
+    public ResponseEntity<?> deleteFriend(@RequestBody FriendDto friendDto) {
+        try {
+            //여기서 currentUser가 null임 고치기.
+            Member currentUser = memberService.findByUsername(friendDto.getUsername());
+            Member friend = memberService.findByUsername(friendDto.getFriendName());
 
+            if (currentUser == null || friend == null) {
+                return ResponseEntity.notFound().build();
+            }
+            currentUser.removeFriend(friend);
+            memberService.save(currentUser);
+
+            return ResponseEntity.ok().body("Friend request accepted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting friend request");
+        }
+    }
 }

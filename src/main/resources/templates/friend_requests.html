@@ -13,7 +13,7 @@
                     friendName: friendName
                 };
                 $.ajax({
-                    url: '/members/acceptFriend',  //acceptFriend로 바꾸기!
+                    url: '/members/acceptFriend',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(formData),
@@ -29,7 +29,11 @@
     </script>
 </head>
 <body>
-<ul>
+<h1>Received Friend Requests</h1>
+<div th:if="${friendRequests.isEmpty()}">
+    <p>나를 추가한 친구가 아직 없어요.</p>
+</div>
+<ul th:unless="${friendRequests.isEmpty()}">
     <li th:each="member : ${friendRequests}">
         <span th:text="${member.username}">Username</span>
         <button type="button" class="addFriendBtn">Accept Request</button>

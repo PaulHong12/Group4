@@ -30,25 +30,6 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    /*
-    @GetMapping("/{username}/{date}")
-    public ResponseEntity<ResultDto<List<PostDto>>> getTodayPost(@PathVariable String username, @PathVariable("date") String date) {
-        //LocalDate localDate = LocalDate.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        LocalDate localDate = LocalDate.parse(date, formatter);
-
-        List<PostDto> postDtos = postService.getPostsByDateAndMember(localDate, username).stream()
-                .map(Post::convert2DTO)
-                .collect(Collectors.toList());
-
-        if (postDtos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
-        }
-
-        return ResponseEntity.ok(new ResultDto<>(200, "ok", postDtos));
-    } */
-
     @PostMapping("/addPost") // No need for "/addPost" since we're posting to "/posts"
     public ResponseEntity<ResultDto<PostDto>> addPost(@RequestBody PostDto dto) {
         Post newPost = postService.addPost(dto.getTitle(), dto.getContent(), dto.getUsername());
@@ -101,7 +82,13 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ResultDto<Void>> deletePost(@PathVariable("postId") long postId) {
+    public ResponseEntity<ResultDto<Void>> deletePost(@PathVariable("postId") long postId, Authentication authentication) {
+        String currentUsername = authentication.getName();
+        currentUsername = memberService.findByUsername(currentUsername).getEmail();
+        Post p1 = postService.findById(postId).get();
+
+        if (!p1.getCreator().equals(currentUsername))
+            return null;
         return postService.getPost(postId)
                 .map(post -> {
                     postService.deletePost(postId);

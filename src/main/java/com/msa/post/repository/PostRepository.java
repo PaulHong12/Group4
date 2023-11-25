@@ -21,4 +21,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
 	List<Post> findByCreatorAndDateBetween(String creator, LocalDate startDate, LocalDate endDate);
 
     List<Post> findByCreatorAndDate(LocalDate date, String username);
+
+   // Post getPostById(long postId);
 }

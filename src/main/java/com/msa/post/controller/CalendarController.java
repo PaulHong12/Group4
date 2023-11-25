@@ -104,10 +104,9 @@ public String home(@PathVariable String username, Model model, HttpServletReques
     boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
 
     //이부분 조금만 수정! 중요
-    if (!profileUser.getUsername().equals(loggedInUser.getUsername()) || !isFriend) {
+    if (!profileUser.getUsername().equals(loggedInUser.getUsername()) && !isFriend) {
         // Redirect if not the owner or a friend
-        //String loggedInUsername = loggedInUser.getUsername();
-        return "redirect:/" + loggedInUser.getEmail() + "/home";
+        return "redirect:/recommendedFriends";
     }
 
     // Initialize days array
@@ -143,8 +142,21 @@ public String home(@PathVariable String username, Model model, HttpServletReques
 
         //특정 날짜 글 조회
         @GetMapping("/home/{username}/{date}")
-        public String dailyPosts(@PathVariable String username, @PathVariable String date, Model model) {
+        public String dailyPosts(@PathVariable String username, @PathVariable String date, Model model,
+                                 HttpServletRequest request) {
         try {
+            //친구일 때만 방문 가능!
+            Member profileUser = memberService.findByEmail(username).get();
+            Member loggedInUser = memberService.getLoggedInUser(request); // Implement this method to identify the logged-in user
+            boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
+
+            //이부분 조금만 수정! 중요
+            if (!profileUser.getUsername().equals(loggedInUser.getUsername()) && !isFriend) {
+                // Redirect if not the owner or a friend
+                //String loggedInUsername = loggedInUser.getUsername();
+
+                return "redirect:/recommendedFriends";
+            }
             // Define a DateTimeFormatter to specify the input date format
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(date, formatter);
@@ -171,10 +183,12 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         String currentUsername = null;
 
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-            //뒤에-user이 붙음..
             currentUsername = authentication.getName(); // Gets the username of the currently logged-in user
         }
+        Post post = postService.getPostById(postId);
         currentUsername = memberService.findByUsername(currentUsername).getEmail();
+        if(!post.getCreator().equals(currentUsername))
+            return "redirect:/" + currentUsername +"/"+"home/";
         PostDto postDto =  new PostDto("제목", "내용", currentUsername, postId);
         postDto.setUsername(currentUsername); // Set the username in PostDto
 
@@ -208,7 +222,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
 
         // Add the list to the model
         model.addAttribute("members", nonFriendMembers);
-
+        model.addAttribute("currentUsername", currentUsername);
         return "showAndManageFriends"; // The name of your Thymeleaf template
     }
 
@@ -218,8 +232,8 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         String currentUsername = authentication.getName();
         Member currentUser = memberService.findByUsername(currentUsername);
         Set<Member> friendRequests = memberService.findReceivedFriendRequests(currentUsername);
-        if(!friendRequests.isEmpty())
-            model.addAttribute("friendRequests", friendRequests);
+        //if(!friendRequests.isEmpty())
+        model.addAttribute("friendRequests", friendRequests);
         model.addAttribute("currentUsername", currentUsername);
         return "friend_requests"; // Name of the Thymeleaf template
     }

@@ -132,6 +132,22 @@ $('.deleteCommentBtn').click(function(event) {
         }
     });
 });
+$('.deletePostBtn').click(function(event) {
+    var postId = $(this).siblings(".postId").val();
+    var creator = $(this).siblings(".creator").val();
+    $.ajax({
+        url: '/posts/' + postId,
+        type: 'DELETE',
+        success: function(response) {
+            // if error, delete this line
+            window.location.href = '/'+ creator + '/home';
+            console.log('Comment deleted successfully');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error deleting comment:', error);
+        }
+    });
+});
 $('.editCommentForm').hide();
 $('.editCommentBtn').click(function(event) {
     event.preventDefault();
@@ -178,6 +194,9 @@ $('.editCommentSubmit').click(function(event) {
     </div>
     <button type="button" class="editPostBtn">Edit Post</button>
     <input type="hidden" class="postId" th:value="${post.id}"/>
+    <button type="button" class="deletePostBtn">Delete Post</button>
+    <input type="hidden" class="postId" th:value="${post.id}"/>
+    <input type="hidden" class="creator" th:value="${post.creator}"/>
     <!-- add Comment -->
     <form id="commentForm" method="post">
         <textarea id="commentInput" class="commentInput" name="content" placeholder=""></textarea>
@@ -190,7 +209,7 @@ $('.editCommentSubmit').click(function(event) {
 
     <!-- Display Comments -->
     <div th:each="comment : ${post.comments}">
-        <span class="comment-nickname" th:text="${comment.nickName}">Nickname</span>
+        <span class="comment-nickname" th:text="${#strings.substringBefore(comment.nickName, '@')}">Nickname</span>
         <span class="comment-content" th:text="${comment.content}">Comment content</span>
         <span class="comment-created-at" th:text="${comment.createdAt}">Created At</span>
         <!-- 댓글 수정, 삭제 요청 Ajax로 commentId 포함해서 commentService -> commentRepository로 알맞게 보내기.-->

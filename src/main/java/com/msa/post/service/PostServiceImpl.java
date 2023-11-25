@@ -70,6 +70,12 @@ public class PostServiceImpl implements PostService {
 		//}
 		return post;
 	}
+
+	@Override
+	public Post getPostById(long postId) {
+		return postRepository.findById(postId).get();
+	}
+
 	@Override
 	public List<Post> getPostsByDate(LocalDate date) {
 		return postRepository.findAllByDate(date);

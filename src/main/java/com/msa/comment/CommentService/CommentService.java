@@ -2,6 +2,7 @@ package com.msa.comment.CommentService;
 
 import com.msa.comment.domain.Comment;
 import com.msa.comment.repository.CommentRepository;
+import com.msa.post.domain.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,9 @@ public class CommentService {
         } else {
             return false;
         }
+    }
+
+    public Comment FindById(long commentId) {
+        return commentRepository.findById(commentId).get();
     }
 }
