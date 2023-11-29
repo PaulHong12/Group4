@@ -82,6 +82,7 @@
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         var player;
+
         function onYouTubeIframeAPIReady() {
             var obj = document.getElementById("print");
 
@@ -93,7 +94,7 @@
             });
         }
 
-        window.onload=function() {
+        window.onload = function () {
             onYouTubeIframeAPIReady()
             // player.videoId = document.getElementById("print");
 
@@ -212,13 +213,13 @@
 <h1>Posts for <span th:text="${date}"></span></h1>
 <div th:each="post : ${posts}">
     <!-- 글 수정, 삭제 요청 Ajax로 postId 포함해서 postService로 알맞게 보내기.-->
-    <div>
-        <h2 th:text="${post.title}">Post Title</h2>
-        <p th:text="${post.content}">Post content</p>
-    </div>
     <div id="print" style="display: none;" th:name="play" th:text="${post.videoId}">
     </div>
+    <h2 th:text="${post.title}">Post Title</h2>
     <div id="player"></div>
+    <p th:text="${post.content}">Post content</p>
+
+    <br>
     <button type="button" class="editPostBtn">Edit Post</button>
     <input type="hidden" class="postId" th:value="${post.id}"/>
     <button type="button" class="deletePostBtn">Delete Post</button>
