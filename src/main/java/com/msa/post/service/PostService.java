@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PostService {
 	
-	Post addPost(String title, String content, String username);
+	Post addPost(String title, String content, String username, String keyword);
 	
 	Optional<Post> getPost(long id);
 	
@@ -26,7 +26,7 @@ public interface PostService {
 
 	List<Post> getPostsByDateRange(LocalDate start, LocalDate end);
 
-	Post updatePost(long postId, String title, String content);
+	Post updatePost(long postId, String title, String content, String videoId);
 
     List<Post> getPostsByDateAndMember(LocalDate now, String username);
 
