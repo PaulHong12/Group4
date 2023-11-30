@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -46,10 +47,9 @@ public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccess
                     Set.of("ROLE_USER"));
             memberRepository.save(newMember);
         }
-
         response.addCookie(jwtTokenProvider.generateCookie("refreshToken", tokenInfo.refreshToken()));
         response.addCookie(jwtTokenProvider.generateCookie("accessToken", tokenInfo.accessToken()));
         // 홈으로 리다이렉트 시킨다.
-        getRedirectStrategy().sendRedirect(request, response, "/");
+        getRedirectStrategy().sendRedirect(request, response, "/"+email+"/home");
     }
 }
