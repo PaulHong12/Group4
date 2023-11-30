@@ -59,20 +59,11 @@
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-<<<<<<< HEAD
         $(document).ready(function() {
-            $('#submit').click(function(event){
-                event.preventDefault();
-                var username = "[[${postDto.username}]]";
-                var postId = "[[${postDto.postId}]]";
-=======
-        $(document).ready(function () {
-
             $('#submit').click(function (event) {
                 event.preventDefault(); // Prevent the default form submission
                 var username = "[[${postDto.username}]]"; // Retrieve username from postDto
                 var postId = "[[${postDto.postId}]]"; // Retrieve postId from postDto
->>>>>>> 1beeea71fa10ddb5b5d70e5ccec73b246ec4ca57
                 var formData = {
                     title: $('#title').val(),
                     content: $('#content').val(),
@@ -100,15 +91,11 @@
 <form>
     <div>
         <label for="title">Title:</label>
-<<<<<<< HEAD
         <input type="text" id="title" name="title" class="form-control" />
-=======
-        <input type="text" id="title" name="title"/>
     </div>
     <div>
         <label for="keyword">search:</label>
-        <textarea id="keyword" name="keyword"></textarea>
->>>>>>> 1beeea71fa10ddb5b5d70e5ccec73b246ec4ca57
+        <textarea id="keyword" name="keyword" placeholder="제목+가수를 입력하세요!"></textarea>
     </div>
     <div>
         <label for="content">Content:</label>
