@@ -21,24 +21,60 @@
                         window.location.href = '/receivedFriendRequests';
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error adding post:', xhr.responseText);
+                        console.error('Error adding friend:', xhr.responseText);
                     }
                 });
             });
         });
     </script>
+    <style>
+        #friendRequestsList {
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .request-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        .request-item:hover {
+            background-color: #f0f0f0;
+        }
+        .addFriendBtn {
+            text-decoration: none;
+            color: #007bff;
+            border: none;
+            background-color: transparent;
+            padding: 0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .addFriendBtn:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <h1>Received Friend Requests</h1>
-<div th:if="${friendRequests.isEmpty()}">
-    <p>나를 추가한 친구가 아직 없어요.</p>
+<div id="friendRequestsList">
+    <div th:if="${friendRequests.isEmpty()}">
+        <p>나를 추가한 친구가 아직 없어요.</p>
+    </div>
+    <div th:unless="${friendRequests.isEmpty()}">
+        <ul>
+            <li th:each="member : ${friendRequests}" class="request-item">
+                <span th:text="${member.username}">Username</span>
+                <button type="button" class="addFriendBtn">Accept Request</button>
+                <input type="hidden" class="friendName" th:value="${member.username}" />
+                <input type="hidden" class="username" th:value="${currentUsername}" />
+            </li>
+        </ul>
+    </div>
 </div>
-<ul th:unless="${friendRequests.isEmpty()}">
-    <li th:each="member : ${friendRequests}">
-        <span th:text="${member.username}">Username</span>
-        <button type="button" class="addFriendBtn">Accept Request</button>
-        <input type="hidden" class="friendName" th:value="${member.username}" />
-        <input type="hidden" class="username" th:value="${currentUsername}" />
-    </li>
-</ul>
 </body>
+</html>

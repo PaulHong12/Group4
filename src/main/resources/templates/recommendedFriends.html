@@ -24,17 +24,48 @@
                         parentDiv.remove(); // Use .remove() to remove the element from the DOM
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error adding post:', xhr.responseText);
+                        console.error('Error adding friend:', xhr.responseText);
                     }
                 });
             });
         });
     </script>
+    <style>
+        #membersList {
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .member-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        .member-item:hover {
+            background-color: #f0f0f0;
+        }
+        .addFriendBtn {
+            text-decoration: none;
+            color: #007bff;
+            border: none;
+            background-color: transparent;
+            padding: 0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .addFriendBtn:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <h1>친구 추천 목록</h1>
 <div id="membersList">
-    <div th:each="member : ${members}">
+    <div th:each="member : ${members}" class="member-item">
         <span th:text="${member.username}">Username</span>
         <button type="button" class="addFriendBtn">Add Friend</button>
         <input type="hidden" class="friendName" th:value="${member.username}" />
