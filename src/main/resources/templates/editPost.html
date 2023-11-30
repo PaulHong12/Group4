@@ -59,14 +59,24 @@
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+<<<<<<< HEAD
         $(document).ready(function() {
             $('#submit').click(function(event){
                 event.preventDefault();
                 var username = "[[${postDto.username}]]";
                 var postId = "[[${postDto.postId}]]";
+=======
+        $(document).ready(function () {
+
+            $('#submit').click(function (event) {
+                event.preventDefault(); // Prevent the default form submission
+                var username = "[[${postDto.username}]]"; // Retrieve username from postDto
+                var postId = "[[${postDto.postId}]]"; // Retrieve postId from postDto
+>>>>>>> 1beeea71fa10ddb5b5d70e5ccec73b246ec4ca57
                 var formData = {
                     title: $('#title').val(),
                     content: $('#content').val(),
+                    keyword: $("#keyword").val(),
                     username: username
                 };
                 $.ajax({
@@ -74,10 +84,10 @@
                     type: 'PUT',
                     contentType: 'application/json',
                     data: JSON.stringify(formData),
-                    success: function(response) {
+                    success: function (response) {
                         window.location.href = '/' + username + '/home';
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.log('Error updating post:', xhr.responseText);
                     }
                 });
@@ -90,7 +100,15 @@
 <form>
     <div>
         <label for="title">Title:</label>
+<<<<<<< HEAD
         <input type="text" id="title" name="title" class="form-control" />
+=======
+        <input type="text" id="title" name="title"/>
+    </div>
+    <div>
+        <label for="keyword">search:</label>
+        <textarea id="keyword" name="keyword"></textarea>
+>>>>>>> 1beeea71fa10ddb5b5d70e5ccec73b246ec4ca57
     </div>
     <div>
         <label for="content">Content:</label>

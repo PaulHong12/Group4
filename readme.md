@@ -1,3 +1,1 @@
-**YC Tech Academy 1기 4조**
-
-
+**YC TECH ACADEMY 4조**

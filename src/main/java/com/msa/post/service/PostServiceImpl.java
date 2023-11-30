@@ -27,9 +27,9 @@ public class PostServiceImpl implements PostService {
 
 
 	@Override
-	public Post addPost(String title, String content, String username) {
+	public Post addPost(String title, String content, String username, String videoId) {
 		// 테스트 코드가 동작하도록 구현
-		Post post = new Post(title, content, username);
+		Post post = new Post(title, content, username, videoId);
 		return postRepository.save(post);
 	}
 
@@ -87,13 +87,14 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Transactional
-	public Post updatePost(long postId, String title, String content) {
+	public Post updatePost(long postId, String title, String content,  String videoId) {
 		Optional<Post> postOptional = postRepository.findById(postId);
 
 		if (postOptional.isPresent()) {
 			Post existingPost = postOptional.get();
 			existingPost.setTitle(title);
 			existingPost.setContent(content);
+			existingPost.setVideoId(videoId);
 			return postRepository.save(existingPost); // Save the updated post
 		} else {
 			// Handle the case where the post does not exist

@@ -48,7 +48,7 @@ public class CalendarController {
             currentUsername = authentication.getName(); // Gets the username of the currently logged-in user
         }
         currentUsername = memberService.findByUsername(currentUsername).getEmail();
-        PostDto postDto =  new PostDto("제목", "내용", currentUsername);
+        PostDto postDto =  new PostDto("제목", "내용", currentUsername, "test"); //videoId 아무거나 씀 나중에 체크
         postDto.setUsername(currentUsername); // Set the username in PostDto
 
         model.addAttribute("postDto", postDto);

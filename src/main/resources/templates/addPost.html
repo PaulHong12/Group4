@@ -60,13 +60,16 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
+            let keyword = null;
+
             $('#submit').click(function(event){
                 event.preventDefault();
                 var username = "[[${postDto.username}]]";
                 var formData = {
                     title: $('#title').val(),
                     content: $('#content').val(),
-                    username: username
+                    username: username,
+                    keyword: keyword
                 };
                 $.ajax({
                     url: '/posts/addPost',
@@ -90,6 +93,10 @@
     <div>
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" class="form-control" />
+    </div>
+    <div>
+        <label for="keyword">search:</label>
+        <textarea id="keyword" name="keyword"></textarea>
     </div>
     <div>
         <label for="content">Content:</label>
