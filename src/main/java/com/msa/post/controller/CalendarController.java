@@ -114,12 +114,24 @@ public class CalendarController {
         }
 
         // Initialize days array
+        LocalDate lastStart= LocalDate.now().minusMonths(1).withDayOfMonth(1);
+        LocalDate lastEnd = LocalDate.now().minusMonths(1).withDayOfMonth(LocalDate.now().minusMonths(1).lengthOfMonth());
+        List<Post> lastPosts = postService.getPostsByDateRangeAndMember(lastStart, lastEnd, username);
+        int[] lastDays = new int[lastEnd.getDayOfMonth()];
+
         LocalDate start = LocalDate.now().withDayOfMonth(1);
         LocalDate end = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
         List<Post> posts = postService.getPostsByDateRangeAndMember(start, end, username);
         int[] days = new int[end.getDayOfMonth()];
 
+
         // Update days array based on posts
+        for (Post post : lastPosts) {
+            LocalDate date = post.getDate();
+            if (date.getMonth().equals(LocalDate.now().minusMonths(1).getMonth())) {
+                lastDays[date.getDayOfMonth() - 1] = 1;
+            }
+        }
         for (Post post : posts) {
             LocalDate date = post.getDate();
             if (date.getMonth().equals(LocalDate.now().getMonth())) {
@@ -127,6 +139,7 @@ public class CalendarController {
             }
         }
         // Add to model
+        model.addAttribute("lastDays", lastDays);
         model.addAttribute("days", days);
 
         return "home";

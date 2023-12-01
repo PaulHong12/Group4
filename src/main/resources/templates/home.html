@@ -52,16 +52,36 @@
         /*<![CDATA[*/
         var username = [[${username}]]; // Ensure username is passed from the controller
         var daysWithPosts = [[${days}]]; // The int[] array from the controller
+        var lastDaysWithPosts = [[${lastDays}]];
         var eventArray = [];
+
+        console.log(lastDaysWithPosts);
+        for (var i = 0; i < lastDaysWithPosts.length; i++) {
+            if (lastDaysWithPosts[i] === 1) {
+                var date = new Date();
+                var currentMonth = date.getMonth();
+                date.setMonth(currentMonth - 1);
+                date.setDate(i + 1); // Set the day
+
+                console.log(date.toISOString().split('T')[0]);
+
+                eventArray.push({
+                    id: 'event-' + date.toISOString().split('T')[0],
+                    start: date.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
+                    title: 'Post on ' + date.toISOString().split('T')[0].substring(5),
+                    url: '/home/' + username + '/' + date.toISOString().split('T')[0]
+                });
+            }
+        }
 
         for (var i = 0; i < daysWithPosts.length; i++) {
             if (daysWithPosts[i] === 1) {
-                var date = new Date();
+                date = new Date();
                 date.setDate(i + 1); // Set the day
                 eventArray.push({
-                    id: 'event-' + (i + 1),
+                    id: 'event-' + date.toISOString().split('T')[0],
                     start: date.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
-                    title: 'Post on ' + (i + 1),
+                    title: 'Post on ' + date.toISOString().split('T')[0].substring(5),
                     url: '/home/' + username + '/' + date.toISOString().split('T')[0]
                 });
             }
@@ -107,6 +127,7 @@
                 }
             });
             calendar.render();
+            console.log(eventArray);
         });
     </script>
 
