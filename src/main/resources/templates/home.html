@@ -44,7 +44,11 @@
     </div>
 
     <!-- 글 작성 Button in top-right corner -->
+<<<<<<< HEAD
     <a href="/addPost" style="position: absolute; top: 10px; right: 550px;" class="btn btn-primary btn-sm top-right">글 작성</a>
+=======
+<!--    <a href="/addPost" style="position: absolute; top: 10px; right: 400px;" class="btn btn-primary btn-sm top-right">글 작성</a>-->
+>>>>>>> 0cfb9ee83ffad89393982831f167da5d7af4ba91
 
     <!-- FullCalendar Script -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
@@ -52,16 +56,36 @@
         /*<![CDATA[*/
         var username = [[${username}]]; // Ensure username is passed from the controller
         var daysWithPosts = [[${days}]]; // The int[] array from the controller
+        var lastDaysWithPosts = [[${lastDays}]];
         var eventArray = [];
+
+        console.log(lastDaysWithPosts);
+        for (var i = 0; i < lastDaysWithPosts.length; i++) {
+            if (lastDaysWithPosts[i] === 1) {
+                var date = new Date();
+                var currentMonth = date.getMonth();
+                date.setMonth(currentMonth - 1);
+                date.setDate(i + 1); // Set the day
+
+                console.log(date.toISOString().split('T')[0]);
+
+                eventArray.push({
+                    id: 'event-' + date.toISOString().split('T')[0],
+                    start: date.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
+                    title: 'Post on ' + date.toISOString().split('T')[0].substring(5),
+                    url: '/home/' + username + '/' + date.toISOString().split('T')[0]
+                });
+            }
+        }
 
         for (var i = 0; i < daysWithPosts.length; i++) {
             if (daysWithPosts[i] === 1) {
-                var date = new Date();
+                date = new Date();
                 date.setDate(i + 1); // Set the day
                 eventArray.push({
-                    id: 'event-' + (i + 1),
+                    id: 'event-' + date.toISOString().split('T')[0],
                     start: date.toISOString().split('T')[0], // Convert to YYYY-MM-DD format
-                    title: 'Post on ' + (i + 1),
+                    title: 'Post on ' + date.toISOString().split('T')[0].substring(5),
                     url: '/home/' + username + '/' + date.toISOString().split('T')[0]
                 });
             }
@@ -73,16 +97,41 @@
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 // [Your existing FullCalendar configuration...]
-
+                height: 720,
+                aspectRatio: 1.1,
+                locale: 'ko',
+                initialView: 'dayGridMonth',
+                selectable: false,
+                headerToolbar: {
+                    end: 'custom1 today prev next'
+                },
                 events: eventArray,
                 eventClick: function (info) {
                     info.jsEvent.preventDefault();
                     if (info.event.url) {
                         window.location.href = info.event.url; // Redirect on event click
                     }
+                },
+                customButtons: {
+                    custom1: {
+                        text: '글 작성',
+                        click: function () {
+                            var currentDate = new Date();
+                            var options = {day: 'numeric'};
+                            var formattedDate = currentDate.toLocaleDateString('en-KR', options);
+
+                            if (daysWithPosts[formattedDate - 1] === 1) {
+                                alert('You\'ve already written today\'s post.');
+                            }
+                            else {
+                                location.href = "/addPost";
+                            }
+                        }
+                    }
                 }
             });
             calendar.render();
+            console.log(eventArray);
         });
     </script>
 

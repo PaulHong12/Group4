@@ -69,7 +69,7 @@
                     title: $('#title').val(),
                     content: $('#content').val(),
                     username: username,
-                    keyword: keyword
+                    keyword: $("#keyword").val()
                 };
                 $.ajax({
                     url: '/posts/addPost',
