@@ -3,10 +3,21 @@
 <head>
     <title>Sign Up</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}"> <!-- Include the same stylesheet -->
+    <style>
+        input[type='text'], input[type='email'], input[type='password'] {
+            width: 100%;  /* Adjust the width as needed */
+            padding: 10px; /* Adjust padding as needed */
+            margin: 8px 0; /* Adjust margin as needed */
+            display: inline-block;
+            border: 1px solid #ccc; /* Adjust border as needed */
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+        }
+    </style>
     <script>
         $(document).ready(function() {
             $('#signup_btn').click(function(event) {
-                event.preventDefault(); // Prevent the default form submission
+                event.preventDefault();
                 console.log("signup clicked!!!");
 
                 var username = $('#username').val();
@@ -30,7 +41,7 @@
                 }).then(function(data) {
                     console.log("Success:", data);
                     alert("회원 가입이 되었습니다.");
-                    window.location.href = '/'+ email+ '/home';
+                    window.location.href = '/'+ email + '/home';
                 }, function(err) {
                     console.error("Error:", err);
                     alert("Error during sign up.");

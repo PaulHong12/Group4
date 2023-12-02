@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,41 +59,14 @@ public class CalendarController {
     public String showLoginForm() {
         return "login";
     }
-/*
-    @GetMapping("/{username}/home")
-    public String home(@PathVariable String username, Model model, HttpServletRequest request) {
-    Map<LocalDate, List<Post>> postsMap = new HashMap<>();
-    //why is profileUser null?
-        Member profileUser = memberService.findByUsername(username);
-        Member loggedInUser = memberService.getLoggedInUser(request); // Implement this method to identify the logged-in user
-        boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
-
-        // 이번달 전체 날짜의 post들을 가져온다
-        LocalDate start = LocalDate.now().withDayOfMonth(1);
-        LocalDate end = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
-        List<Post> posts;
-        if (profileUser.getUsername().equals(loggedInUser.getUsername()) || isFriend) {
-            posts = postService.getPostsByDateRangeAndMember(start, end, username);
-        } else {
-            //redirect to "recommendedFriends";
-            String loggInUsername = loggedInUser.getUsername();
-            return "redirect:/"+ loggInUsername +"/home";
-
-        }
-       // List<Post> posts = postService.getPostsByDateRangeAndMember(start, end, username);
-
-        for (Post post : posts) {
-            LocalDate date = post.getDate(); // Assuming Post has a getDate() method
-            postsMap.computeIfAbsent(date, k -> new ArrayList<>()).add(post);
-        }
-
-        model.addAttribute("postsMap", postsMap);
-        List<List<LocalDate>> weeks = CalendarUtils.generateCalendarData();
-        model.addAttribute("weeks", weeks);
-        return "home";
+    @GetMapping("/chat")
+    public String showChat(@RequestParam String roomId, @RequestParam String userUUID, Model model,Authentication authentication) {
+        String username = authentication.getName();
+        model.addAttribute("roomId", roomId);
+        model.addAttribute("userUUID",userUUID);
+        model.addAttribute("username", username);
+        return "chat";
     }
-*/
-
 
     //메인화면. 캘린더 API와 합치기 시도중
 @GetMapping("/{username}/home")
@@ -130,14 +104,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
 
     @GetMapping({"/", "/index"})
     public String calendar(Model model) {
-    //    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //    if (auth instanceof AnonymousAuthenticationToken) {
-        //    // User not logged in
             return "redirect:/login";
-     //   } else {
-            // change to /{username}/home
-        //    return "redirect:/home";
-       // }
     }
 
         //특정 날짜 글 조회
@@ -150,11 +117,8 @@ public String home(@PathVariable String username, Model model, HttpServletReques
             Member loggedInUser = memberService.getLoggedInUser(request); // Implement this method to identify the logged-in user
             boolean isFriend = memberService.isFriend(profileUser.getId(), loggedInUser.getId()); // Implement this method to check friendship
 
-            //이부분 조금만 수정! 중요
+            //친구 아니라면 친구추가 페이지로
             if (!profileUser.getUsername().equals(loggedInUser.getUsername()) && !isFriend) {
-                // Redirect if not the owner or a friend
-                //String loggedInUsername = loggedInUser.getUsername();
-
                 return "redirect:/recommendedFriends";
             }
             // Define a DateTimeFormatter to specify the input date format
@@ -164,17 +128,15 @@ public String home(@PathVariable String username, Model model, HttpServletReques
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String loggedInUsername = authentication.getName(); // Retrieves the username of the logged-in user
             String loggedInUserEmail = memberService.findByUsername(loggedInUsername).getEmail();
-            // Rest of your code...
+
             model.addAttribute("loggedInUsername", loggedInUserEmail);
-            //model.addAttribute("loggedInUsername", loggedInUsername);
             model.addAttribute("posts", posts);
             model.addAttribute("date", date);
 
         } catch (Exception e) {
-            // Handle parsing error or no posts found
             model.addAttribute("error", "Invalid date or no posts available.");
         }
-        return "daily_posts"; // Template showing posts for the selected date
+        return "daily_posts";
     }
 
     @GetMapping("/editPost/{postId}")
@@ -208,7 +170,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         // Add the list to the model
         model.addAttribute("members", nonFriendMembers);
         model.addAttribute("currentUsername", currentUsername);
-        return "recommendedFriends"; // The name of your Thymeleaf template
+        return "recommendedFriends";
     }
 
     @GetMapping("/showAndManageFriends")
@@ -223,7 +185,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         // Add the list to the model
         model.addAttribute("members", nonFriendMembers);
         model.addAttribute("currentUsername", currentUsername);
-        return "showAndManageFriends"; // The name of your Thymeleaf template
+        return "showAndManageFriends";
     }
 
     @GetMapping("/receivedFriendRequests")
@@ -235,7 +197,7 @@ public String home(@PathVariable String username, Model model, HttpServletReques
         //if(!friendRequests.isEmpty())
         model.addAttribute("friendRequests", friendRequests);
         model.addAttribute("currentUsername", currentUsername);
-        return "friend_requests"; // Name of the Thymeleaf template
+        return "friend_requests";
     }
 
 }

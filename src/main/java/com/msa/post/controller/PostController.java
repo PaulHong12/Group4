@@ -14,13 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
-// TO DO:URI 수정
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
