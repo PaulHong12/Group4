@@ -11,9 +11,4 @@ Team members: Seokjung  Hong(me), Hansol Kim
 3. Friend management(add friend, remove friend), only friends can view your posts.
 4. Direct Messaging
 
-1. 로그인 회원가입 OAuth 메인화면
-2. 글, 댓글 CRUD
-3. 친구관리
-4. 유튜브 동영상 api 
-5. DM
 
