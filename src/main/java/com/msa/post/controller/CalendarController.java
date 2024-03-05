@@ -121,18 +121,15 @@ public class CalendarController {
 
     @GetMapping({"/", "/index"})
     public String calendar(Model model) {
-<<<<<<< HEAD
             return "redirect:/login";
-=======
         //    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         //    if (auth instanceof AnonymousAuthenticationToken) {
         //    // User not logged in
-        return "redirect:/login";
+        //return "redirect:/login";
         //   } else {
         // change to /{username}/home
         //    return "redirect:/home";
         // }
->>>>>>> 0cfb9ee83ffad89393982831f167da5d7af4ba91
     }
 
     //특정 날짜 글 조회

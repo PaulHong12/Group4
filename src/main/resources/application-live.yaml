@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:file:./db
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:postgresql://musicdiary.c5a4ec66wz1z.ap-northeast-2.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: 1234qwer
+    driver-class-name: org.postgresql.Driver
