@@ -3,19 +3,16 @@ package com.msa.post.domain;
 import com.msa.comment.domain.Comment;
 import com.msa.post.dto.PostDto;
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,21 +20,34 @@ import javax.persistence.*;
 public class Post {
 
 	@Id
+	@Getter
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", updatable = false)
-	private long id;
+	@Column(name = "id")
+	public long id;
 
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> comments = new ArrayList<>();
+
+	@Getter
+	@Column(name = "creator")
+	private String creator;
+
+	@lombok.Setter
 	@Column(name="title")
 	private String title;
 
+	@lombok.Setter
 	@Column(name="content", columnDefinition="TEXT")
 	private String content;
 
+	//
 	@Column(name = "date")
-	private LocalDate date;
+	private LocalDate date = LocalDate.now();
 
-	@Column(name="thumbnail")
-	private String thumbnail; // URL or path of the thumbnail image
+	@Getter
+	@Setter
+	@Column(name="videoId")
+	private String videoId;
 
 	@CreatedDate
 	private LocalDateTime createdAt = LocalDateTime.now();
@@ -45,31 +55,30 @@ public class Post {
 	@LastModifiedDate
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "id")
-	private Set<Comment> comments;
-	
+
 	public Post() {
 		super();
 	}
 
-	public Post(String title, String content) {
+	public Post(String title, String content, String username) {
 		this.title = title;
 		this.content = content;
+		this.creator = username;
 	}
-	public Post(String title, String content, String thumbnail) {
+	public Post(String title, String content, String username, String videoId) {
 		this.title = title;
 		this.content = content;
-		this.thumbnail = thumbnail;
+		this.creator = username;
+		this.videoId = videoId;
 	}
-	public Post(String title, String content, Set<Comment> comments) {
+	/*public Post(String title, String content, List<Comment> comments) {
 		this.title = title;
 		this.content = content;
 		this.comments = comments;
-	}
+	}*/
 
 	public PostDto convert2DTO() {
-		return new PostDto(this.getTitle(), this.getContent());
+		return new PostDto(this.getTitle(), this.getContent(), this.creator, this.videoId);
 	}
 
 	public LocalDate getDate() {
@@ -77,14 +86,12 @@ public class Post {
 	}
 
 	public void addComment(Comment newComment) {
-
+		if (comments == null) {
+			comments = new ArrayList<>();
+		}
+		newComment.setPost(this, this.id);
+		comments.add(newComment);
+		//comments.add(new Comment(newComment.getContent(), this, this.id));
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
 }

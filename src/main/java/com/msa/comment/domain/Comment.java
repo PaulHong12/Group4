@@ -1,6 +1,8 @@
 package com.msa.comment.domain;
 
+import com.msa.comment.dto.CommentDto;
 import com.msa.post.domain.Post;
+import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Getter
 @Table(name = "comment")
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
@@ -19,27 +22,41 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
+    @Column(name = "id")
     private long id;
 
     @Column
-    private String nickName;
+    public String nickName;
 
-    @Column(name="content")
+    @Column(name = "content")
     private String content;
 
     //many comments to one post
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
     @CreationTimestamp
-    private LocalDateTime createdAt = LocalDateTime.now();
+    public LocalDateTime createdAt = LocalDateTime.now();
 
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public Comment(String content) {
+
+    public void setPost(Post post, Long postId) {
+        this.post = post;
+    }
+
+    //이거 nickname(comment author)도 저장해야함.
+    public Comment(String content, Post post) {
         this.content = content;
+        this.post = post;
+    }
+
+    public Comment(String content, Post post, String nickName) {
+        this.content = content;
+        this.post = post;
+        this.nickName = nickName;
     }
 
     public Comment() {
@@ -47,7 +64,17 @@ public class Comment {
     }
 
     public void setContent(String content) {
-        this.content=content;
+        this.content = content;
     }
 
+    public String getContent() {
+        return this.content;
+    }
+
+    public Object convertToDTO() {
+        CommentDto dto = new CommentDto();
+        dto.setId(this.id);       // Set the id from Comment to CommentDto
+        dto.setContent(this.content); // Set the content from Comment to CommentDto
+        return dto;
+    }
 }

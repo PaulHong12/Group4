@@ -6,18 +6,17 @@ import com.msa.member.dto.LoginDto;
 import com.msa.member.dto.SignupDto;
 import com.msa.member.dto.UserDto;
 import com.msa.member.service.MemberService;
+import com.msa.post.dto.FriendDto;
 import com.msa.post.dto.ResultDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -36,7 +35,7 @@ public class MemberController {
 
     @PostMapping("/auth/signUp")
     public ResponseEntity<ResultDto<Member>> signUp(@RequestBody SignupDto signupDto) {
-        Member newMember = memberService.addUser(signupDto.userName(), signupDto.email(), signupDto.password());
+        Member newMember = memberService.addUser(signupDto.username(), signupDto.email(), signupDto.password());
         return ResponseEntity.ok()
                 .body(new ResultDto<>(200, "", newMember));
     }
@@ -81,5 +80,60 @@ public class MemberController {
                 .body(new ResultDto<>(200, "Logged out successfully", ""));
     }
 
+    //username이나 dto로바꾸기?
+    @PostMapping("/addFriend")
+   // public ResponseEntity<?> addFriend(@PathVariable String username, @PathVariable String friendUsername) {
+    public ResponseEntity<?> addFriend(@RequestBody FriendDto friendDto) {
+        try {
+            Member member = memberService.findByUsername(friendDto.getUsername());
+            Member friend = memberService.findByUsername(friendDto.getFriendName());
 
+            if (member == null || friend == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            member.addFriend(friend);
+            memberService.save(member); // Assuming save method will also update the member
+
+            return ResponseEntity.ok().body("Friend added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding friend");
+        }
+    }
+    @PostMapping("/acceptFriend")
+    public ResponseEntity<?> acceptFriend(@RequestBody FriendDto friendDto) {
+        try {
+            //여기서 currentUser가 null임 고치기.
+            Member currentUser = memberService.findByUsername(friendDto.getUsername());
+            Member friend = memberService.findByUsername(friendDto.getFriendName());
+
+            if (currentUser == null || friend == null) {
+                return ResponseEntity.notFound().build();
+            }
+            currentUser.acceptFriendRequest(friend);
+            memberService.save(currentUser);
+
+            return ResponseEntity.ok().body("Friend request accepted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting friend request");
+        }
+    }
+    @PostMapping("/deleteFriend")
+    public ResponseEntity<?> deleteFriend(@RequestBody FriendDto friendDto) {
+        try {
+            //여기서 currentUser가 null임 고치기.
+            Member currentUser = memberService.findByUsername(friendDto.getUsername());
+            Member friend = memberService.findByUsername(friendDto.getFriendName());
+
+            if (currentUser == null || friend == null) {
+                return ResponseEntity.notFound().build();
+            }
+            currentUser.removeFriend(friend);
+            memberService.save(currentUser);
+
+            return ResponseEntity.ok().body("Friend request accepted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error accepting friend request");
+        }
+    }
 }

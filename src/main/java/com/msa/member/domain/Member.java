@@ -29,7 +29,7 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue
     @Type(type="org.hibernate.type.UUIDCharType") // This line is optional, Hibernate usually detects the type automatically.
-    private UUID id;
+    public UUID id;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -53,6 +53,7 @@ public class Member implements UserDetails {
     @Builder.Default
     private Set<String> roles = new HashSet<>();
 
+
     @Getter
     @ManyToMany
     @JoinTable(
@@ -61,6 +62,15 @@ public class Member implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
     private Set<Member> friends = new HashSet<>();
+
+    @Getter
+    @ManyToMany
+    @JoinTable(
+            name = "member_friend_requests",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_requester_id")
+    )
+    private Set<Member> receivedFriendRequests = new HashSet<>();
 
     // 양방향 관계., 누구의 친구인지 알수있음.
     @Getter
@@ -128,14 +138,34 @@ public class Member implements UserDetails {
         this.friends = friends;
     }
 
-    public void addFriend(Member friend) {
-        this.friends.add(friend);
-        friend.getFriendOf().add(this); // Add this member to the friend's list of 'friendOf'
+    // Method to handle receiving a friend request
+    public void receiveFriendRequest(Member member) {
+        this.receivedFriendRequests.add(member);
     }
 
+    // Method to handle accepting a friend request
+    public void acceptFriendRequest(Member member) {
+        if (receivedFriendRequests.contains(member)) {
+            friends.add(member);
+            member.getFriends().add(this); // Mutual friendship
+            receivedFriendRequests.remove(member);
+        }
+    }
+
+    // Method to handle declining a friend request
+    public void declineFriendRequest(Member member) {
+        receivedFriendRequests.remove(member);
+    }
+
+    // Existing addFriend method updated to send a friend request
+    public void addFriend(Member friend) {
+        friend.receiveFriendRequest(this);
+    }
+
+    // Updated removeFriend method
     public void removeFriend(Member friend) {
         this.friends.remove(friend);
-        friend.getFriendOf().remove(this); // Remove this member from the friend's list of 'friendOf'
+        friend.getFriends().remove(this); // Remove from both sides
     }
 
     public void setFriendOf(Set<Member> friendOf) {
